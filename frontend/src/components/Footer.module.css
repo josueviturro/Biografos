@@ -1,0 +1,102 @@
+.footer {
+  background-color: #111111;
+  border-top: 1px solid #333333;
+  padding: 3rem 0 0;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  padding-bottom: 3rem;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+     justify-content: space-between;
+  }
+}
+
+/* Columna marca */
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.brandRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logoImg {
+  height: 2rem;
+  width: auto;
+}
+
+.brandName {
+  color: var(--color-gold);
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  letter-spacing: 0.2em;
+}
+
+.brandDesc {
+  color: var(--color-gray);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+/* Columnas links / contacto */
+.colTitle {
+  color: var(--color-white);
+  font-family: var(--font-serif);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 1rem;
+}
+
+.linkList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.link {
+  color: var(--color-gray);
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.link:hover {
+  color: var(--color-green-light);
+}
+
+.contactText {
+  color: var(--color-gray);
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Copyright */
+.copyright {
+  border-top: 1px solid #222222;
+  padding: 1.5rem;
+  text-align: center;
+  font-size: 0.7rem;
+  color: var(--color-gray);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}

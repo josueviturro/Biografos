@@ -1,0 +1,156 @@
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* ── Hero ── */
+.hero {
+  position: relative;
+  height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.heroBg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.heroImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.45);
+}
+
+.heroContent {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 0 1rem;
+  max-width: 900px;
+}
+
+.heroSubtitle {
+  color: var(--color-accent);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  margin-bottom: 1rem;
+}
+
+.heroTitle {
+  font-family: var(--font-serif);
+  font-size: clamp(2.2rem, 6vw, 3.75rem);
+  color: var(--color-white);
+  line-height: 1.15;
+  margin-bottom: 2rem;
+}
+
+.heroBtn {
+  margin: 0 auto;
+}
+
+/* ── Categorías ── */
+.categories {
+  padding: 5rem 0;
+}
+
+.sectionTitle {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  color: var(--color-white);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.categoryGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .categoryGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.categoryCard {
+  height: 10rem;
+  border-radius: 2px;
+  cursor: pointer;
+  border: 1px solid #333333;
+  background-color: #222222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.3s, background-color 0.3s;
+}
+
+.categoryCard:hover {
+  border-color: var(--color-accent);
+  background-color: #2a2a2a;
+}
+
+.categoryName {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  color: var(--color-white);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  transition: color 0.3s;
+}
+
+.categoryCard:hover .categoryName {
+  color: var(--color-accent);
+}
+
+/* ── Más vendidos ── */
+.bestSellers {
+  padding: 5rem 0;
+  background-color: #222222;
+}
+
+.bestSellersHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 3rem;
+}
+
+.viewAllBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--color-accent);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+  font-family: var(--font-sans);
+}
+
+.viewAllBtn:hover {
+  color: var(--color-green-light);
+  text-decoration: underline;
+}
+
+.productGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .productGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

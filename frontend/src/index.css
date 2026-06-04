@@ -1,0 +1,43 @@
+/* ── Fuentes de Google ── */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap');
+
+/* ── Variables globales de color y tipografía ── */
+:root {
+  --color-black: #1A1A1A;
+  --color-dark: #212121;
+  --color-green: #1B5E20;
+  --color-green-light: #2E7D32;
+  --color-gold: #C9A84C;
+  --color-gold-light: #E2C27D;
+  --color-accent: #4CAF50;        /* verde amigable para precios, badges, highlights */
+  --color-white: #F5F5F5;
+  --color-gray: #9E9E9E;
+
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Montserrat', system-ui, sans-serif;
+}
+
+/* ── Reset base ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-black);
+  color: var(--color-white);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Selección de texto con colores de marca */
+::selection {
+  background-color: var(--color-accent);
+  color: var(--color-black);
+}
+
+#root {
+  min-height: 100svh;
+}
