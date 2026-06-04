@@ -63,7 +63,16 @@ export default function AdminPage() {
   return (
     <div className={styles.layout}>
 
-      {/* ── Sidebar ── */}
+      {/* ── Top bar mobile (reemplaza sidebar en pantallas chicas) ── */}
+      <div className={styles.mobileTopBar}>
+        <div className={styles.mobileTopBarBrand}>
+          <span className={styles.mobileTopBarTitle}>BIOGRAFO</span>
+          <span className={styles.mobileTopBarSub}>Panel Admin</span>
+        </div>
+        <a href="/#/" className={styles.mobileTopBarLink}>← Ver tienda</a>
+      </div>
+
+      {/* ── Sidebar (tablet y desktop) ── */}
       <aside className={styles.sidebar}>
         <div className={styles.sidebarLogo}>
           <span className={styles.sidebarTitle}>BIOGRAFO</span>
