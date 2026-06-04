@@ -274,6 +274,28 @@
   color: var(--color-white);
 }
 
+.tdThumb {
+  width: 48px;
+  padding-right: 0 !important;
+}
+
+.thumbnail {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 4px;
+  display: block;
+  background-color: #222;
+}
+
+.thumbnailEmpty {
+  width: 44px;
+  height: 44px;
+  border-radius: 4px;
+  background-color: #2a2a2a;
+  border: 1px dashed #444;
+}
+
 .tdName {
   font-weight: 500;
   max-width: 200px;

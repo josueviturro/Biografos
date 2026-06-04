@@ -125,6 +125,7 @@ export default function AdminPage() {
           <table className={styles.table}>
             <thead>
               <tr>
+                <th></th>
                 <th>Nombre</th>
                 <th>Categoría</th>
                 <th>Precio</th>
@@ -135,6 +136,18 @@ export default function AdminPage() {
             <tbody>
               {products.map((product) => (
                 <tr key={product.id}>
+                  <td className={styles.tdThumb}>
+                    {product.image ? (
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className={styles.thumbnail}
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                      />
+                    ) : (
+                      <div className={styles.thumbnailEmpty} />
+                    )}
+                  </td>
                   <td className={styles.tdName}>{product.name}</td>
                   <td><span className={styles.categoryBadge}>{product.category}</span></td>
                   <td className={styles.tdPrice}>{formatPrice(product.price)}</td>
