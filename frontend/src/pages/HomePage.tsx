@@ -1,21 +1,16 @@
 // --- Página Home: Hero, Categorías destacadas, Más vendidos ---
 
+import { useNavigate } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import Button from '../components/Button';
 import ProductCard from '../components/ProductCard';
 import { MOCK_PRODUCTS } from '../data/products';
-import type { PageView, Product } from '../types';
 import styles from './HomePage.module.css';
 
 const FEATURED_CATEGORIES = ['Dormitorio', 'Mesas', 'Almacenamiento'];
 
-interface HomePageProps {
-  onNavigate: (page: PageView) => void;
-  onViewDetail: (id: number) => void;
-  onAddToCart: (product: Product) => void;
-}
-
-export default function HomePage({ onNavigate, onViewDetail, onAddToCart }: HomePageProps) {
+export default function HomePage() {
+  const navigate = useNavigate();
   const bestSellers = MOCK_PRODUCTS.slice(0, 3);
 
   return (
@@ -35,7 +30,7 @@ export default function HomePage({ onNavigate, onViewDetail, onAddToCart }: Home
           <h1 className={styles.heroTitle}>
             Elevando el Arte del <br /> Pino.
           </h1>
-          <Button onClick={() => onNavigate('catalog')} className={styles.heroBtn}>
+          <Button onClick={() => navigate('/catalogo')} className={styles.heroBtn}>
             Ver Colección <ChevronRight size={18} />
           </Button>
         </div>
@@ -50,7 +45,7 @@ export default function HomePage({ onNavigate, onViewDetail, onAddToCart }: Home
               <div
                 key={cat}
                 className={styles.categoryCard}
-                onClick={() => onNavigate('catalog')}
+                onClick={() => navigate('/catalogo')}
               >
                 <h3 className={styles.categoryName}>{cat}</h3>
               </div>
@@ -64,21 +59,13 @@ export default function HomePage({ onNavigate, onViewDetail, onAddToCart }: Home
         <div className={styles.container}>
           <div className={styles.bestSellersHeader}>
             <h2 className={styles.sectionTitle}>Más Vendidos</h2>
-            <button
-              className={styles.viewAllBtn}
-              onClick={() => onNavigate('catalog')}
-            >
+            <button className={styles.viewAllBtn} onClick={() => navigate('/catalogo')}>
               Ver todo <ChevronRight size={16} />
             </button>
           </div>
           <div className={styles.productGrid}>
             {bestSellers.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onAddToCart={onAddToCart}
-                onViewDetail={onViewDetail}
-              />
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         </div>

@@ -1,40 +1,44 @@
-// --- Página detalle de producto: galería, descripción, selector cantidad, agregar al carrito ---
+// --- Página detalle de producto: descripción, selector cantidad, agregar al carrito ---
 
 import { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import Button from '../components/Button';
 import QuantitySelector from '../components/QuantitySelector';
 import { MOCK_PRODUCTS } from '../data/products';
 import { formatPrice } from '../utils/format';
-import type { Product } from '../types';
+import { useCart } from '../context/CartContext';
 import styles from './ProductDetailPage.module.css';
 
-interface ProductDetailPageProps {
-  productId: number | null;
-  onAddToCart: (product: Product, quantity: number) => void;
-  onBack: () => void;
-}
-
-export default function ProductDetailPage({ productId, onAddToCart, onBack }: ProductDetailPageProps) {
-  const product = MOCK_PRODUCTS.find((p) => p.id === productId);
+export default function ProductDetailPage() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
+
+  const product = MOCK_PRODUCTS.find((p) => p.id === Number(id));
 
   if (!product) {
     return (
       <main className={styles.notFound}>
         <p>Producto no encontrado.</p>
-        <button onClick={onBack} className={styles.backBtn}>
-          <ArrowLeft size={18} /> Volver
+        <button onClick={() => navigate('/catalogo')} className={styles.backBtn}>
+          <ArrowLeft size={18} /> Volver al catálogo
         </button>
       </main>
     );
   }
 
+  const handleAddToCart = () => {
+    addToCart(product, quantity);
+    navigate('/carrito');
+  };
+
   return (
     <main className={styles.main}>
 
       {/* Botón volver */}
-      <button className={styles.backBtn} onClick={onBack}>
+      <button className={styles.backBtn} onClick={() => navigate('/catalogo')}>
         <ArrowLeft size={18} /> Volver al Catálogo
       </button>
 
@@ -50,21 +54,28 @@ export default function ProductDetailPage({ productId, onAddToCart, onBack }: Pr
 
           <p className={styles.description}>{product.description}</p>
 
+          {/* Stock */}
+          <p className={styles.stockInfo}>
+            {product.stock > 3
+              ? `Stock disponible: ${product.stock} unidades`
+              : product.stock > 0
+              ? `¡Últimas ${product.stock} unidades!`
+              : 'Sin stock'}
+          </p>
+
           {/* Selector de cantidad */}
           <div className={styles.quantityRow}>
             <QuantitySelector
               quantity={quantity}
-              onIncrease={() => setQuantity((q) => q + 1)}
+              onIncrease={() => setQuantity((q) => Math.min(q + 1, product.stock))}
               onDecrease={() => setQuantity((q) => Math.max(1, q - 1))}
             />
           </div>
 
-          {/* Botón agregar con total calculado */}
-          <Button fullWidth onClick={() => onAddToCart(product, quantity)}>
+          <Button fullWidth onClick={handleAddToCart} disabled={product.stock === 0}>
             Agregar al Carrito — {formatPrice(product.price * quantity)}
           </Button>
 
-          {/* Beneficios */}
           <ul className={styles.benefits}>
             <li>Envío gratuito en CABA y GBA.</li>
             <li>Garantía de 5 años en estructura.</li>

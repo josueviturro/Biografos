@@ -1,21 +1,19 @@
 // --- Header sticky con logo, navegación desktop/mobile y carrito ---
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, Menu, X } from 'lucide-react';
 import Logo from './Logo';
-import type { PageView } from '../types';
+import { useCart } from '../context/CartContext';
 import styles from './Header.module.css';
 
-interface HeaderProps {
-  cartCount: number;
-  onNavigate: (page: PageView) => void;
-}
-
-export default function Header({ cartCount, onNavigate }: HeaderProps) {
+export default function Header() {
+  const navigate = useNavigate();
+  const { cartCount } = useCart();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const handleNav = (page: PageView) => {
-    onNavigate(page);
+  const handleNav = (path: string) => {
+    navigate(path);
     setMobileOpen(false);
   };
 
@@ -34,7 +32,7 @@ export default function Header({ cartCount, onNavigate }: HeaderProps) {
           </button>
 
           {/* Logo + nombre */}
-          <div className={styles.brand} onClick={() => handleNav('home')}>
+          <div className={styles.brand} onClick={() => handleNav('/')}>
             <Logo className={styles.logoImg} />
             <div className={styles.brandText}>
               <span className={styles.brandName}>BIOGRAFO</span>
@@ -44,14 +42,14 @@ export default function Header({ cartCount, onNavigate }: HeaderProps) {
 
           {/* Navegación desktop */}
           <nav className={styles.nav}>
-            <button className={styles.navLink} onClick={() => handleNav('home')}>Home</button>
-            <button className={styles.navLink} onClick={() => handleNav('catalog')}>Catálogo</button>
+            <button className={styles.navLink} onClick={() => handleNav('/')}>Home</button>
+            <button className={styles.navLink} onClick={() => handleNav('/catalogo')}>Catálogo</button>
           </nav>
 
           {/* Ícono carrito */}
           <button
             className={styles.cartBtn}
-            onClick={() => onNavigate('cart')}
+            onClick={() => handleNav('/carrito')}
             aria-label="Ver carrito"
           >
             <ShoppingCart size={24} />
@@ -67,8 +65,8 @@ export default function Header({ cartCount, onNavigate }: HeaderProps) {
       {mobileOpen && (
         <div className={styles.mobileMenu}>
           <nav className={styles.mobileNav}>
-            <button className={styles.mobileNavLink} onClick={() => handleNav('home')}>Home</button>
-            <button className={styles.mobileNavLink} onClick={() => handleNav('catalog')}>Catálogo</button>
+            <button className={styles.mobileNavLink} onClick={() => handleNav('/')}>Home</button>
+            <button className={styles.mobileNavLink} onClick={() => handleNav('/catalogo')}>Catálogo</button>
           </nav>
         </div>
       )}

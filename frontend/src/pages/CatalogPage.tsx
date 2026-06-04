@@ -3,15 +3,9 @@
 import { Filter } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import { MOCK_PRODUCTS, CATEGORIES } from '../data/products';
-import type { Product } from '../types';
 import styles from './CatalogPage.module.css';
 
-interface CatalogPageProps {
-  onViewDetail: (id: number) => void;
-  onAddToCart: (product: Product) => void;
-}
-
-export default function CatalogPage({ onViewDetail, onAddToCart }: CatalogPageProps) {
+export default function CatalogPage() {
   return (
     <main className={styles.main}>
       <div className={styles.layout}>
@@ -34,6 +28,7 @@ export default function CatalogPage({ onViewDetail, onAddToCart }: CatalogPagePr
                 ))}
               </ul>
             </div>
+
           </div>
         </aside>
 
@@ -42,12 +37,7 @@ export default function CatalogPage({ onViewDetail, onAddToCart }: CatalogPagePr
           <h2 className={styles.pageTitle}>Catálogo Completo</h2>
           <div className={styles.productGrid}>
             {MOCK_PRODUCTS.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onAddToCart={onAddToCart}
-                onViewDetail={onViewDetail}
-              />
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         </div>

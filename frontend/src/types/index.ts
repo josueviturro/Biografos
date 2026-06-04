@@ -7,11 +7,11 @@ export interface Product {
   description: string;
   image: string;
   category: string;
+  stock: number;
 }
 
 export interface CartItem extends Product {
   quantity: number;
 }
 
-// Vistas disponibles de la SPA (sin router por ahora)
 export type PageView = 'home' | 'catalog' | 'product-detail' | 'cart' | 'checkout';

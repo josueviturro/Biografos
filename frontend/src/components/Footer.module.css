@@ -99,4 +99,23 @@
   color: var(--color-gray);
   text-transform: uppercase;
   letter-spacing: 0.2em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.devCredit {
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+}
+
+.devLink {
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.devLink:hover {
+  color: var(--color-white);
 }

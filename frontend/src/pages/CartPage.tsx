@@ -1,28 +1,23 @@
 // --- Página carrito: lista de items, resumen y botón checkout ---
 
+import { useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import Button from '../components/Button';
 import QuantitySelector from '../components/QuantitySelector';
 import { formatPrice } from '../utils/format';
-import type { CartItem, PageView } from '../types';
 import styles from './CartPage.module.css';
 
-interface CartPageProps {
-  cartItems: CartItem[];
-  onUpdateQuantity: (id: number, quantity: number) => void;
-  onRemoveItem: (id: number) => void;
-  onNavigate: (page: PageView) => void;
-}
+export default function CartPage() {
+  const navigate = useNavigate();
+  const { cart, updateCartQuantity, removeFromCart } = useCart();
+  const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-export default function CartPage({ cartItems, onUpdateQuantity, onRemoveItem, onNavigate }: CartPageProps) {
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-
-  // Estado vacío
-  if (cartItems.length === 0) {
+  if (cart.length === 0) {
     return (
       <main className={styles.empty}>
         <h2 className={styles.emptyTitle}>Tu carrito está vacío</h2>
         <p className={styles.emptyText}>Descubrí nuestras colecciones y encontrá la pieza perfecta.</p>
-        <Button variant="secondary" onClick={() => onNavigate('catalog')} className={styles.emptyBtn}>
+        <Button variant="secondary" onClick={() => navigate('/catalogo')} className={styles.emptyBtn}>
           Ir al Catálogo
         </Button>
       </main>
@@ -37,7 +32,7 @@ export default function CartPage({ cartItems, onUpdateQuantity, onRemoveItem, on
 
         {/* ── Lista de productos ── */}
         <div className={styles.itemsList}>
-          {cartItems.map((item) => (
+          {cart.map((item) => (
             <div key={item.id} className={styles.item}>
               <div className={styles.itemInfo}>
                 <h3 className={styles.itemName}>{item.name}</h3>
@@ -47,10 +42,10 @@ export default function CartPage({ cartItems, onUpdateQuantity, onRemoveItem, on
               <div className={styles.itemActions}>
                 <QuantitySelector
                   quantity={item.quantity}
-                  onIncrease={() => onUpdateQuantity(item.id, item.quantity + 1)}
-                  onDecrease={() => onUpdateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                  onIncrease={() => updateCartQuantity(item.id, item.quantity + 1)}
+                  onDecrease={() => updateCartQuantity(item.id, Math.max(1, item.quantity - 1))}
                 />
-                <button className={styles.removeBtn} onClick={() => onRemoveItem(item.id)}>
+                <button className={styles.removeBtn} onClick={() => removeFromCart(item.id)}>
                   Eliminar
                 </button>
               </div>
@@ -61,7 +56,6 @@ export default function CartPage({ cartItems, onUpdateQuantity, onRemoveItem, on
         {/* ── Resumen de compra ── */}
         <aside className={styles.summary}>
           <h3 className={styles.summaryTitle}>Resumen de Compra</h3>
-
           <div className={styles.summaryRows}>
             <div className={styles.summaryRow}>
               <span>Subtotal</span>
@@ -72,19 +66,15 @@ export default function CartPage({ cartItems, onUpdateQuantity, onRemoveItem, on
               <span>Gratis</span>
             </div>
           </div>
-
           <div className={styles.divider} />
-
           <div className={styles.totalRow}>
             <span>Total</span>
             <span className={styles.totalAmount}>{formatPrice(subtotal)}</span>
           </div>
-
-          <Button fullWidth onClick={() => onNavigate('checkout')}>
+          <Button fullWidth onClick={() => navigate('/checkout')}>
             Iniciar Compra
           </Button>
-
-          <button className={styles.continueBtn} onClick={() => onNavigate('catalog')}>
+          <button className={styles.continueBtn} onClick={() => navigate('/catalogo')}>
             Seguir comprando
           </button>
         </aside>

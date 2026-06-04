@@ -31,9 +31,15 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Copyright */}
+      {/* Copyright + crédito */}
       <div className={styles.copyright}>
-        © {new Date().getFullYear()} BIOGRAFO Muebles. Todos los derechos reservados.
+        <span>© {new Date().getFullYear()} BIOGRAFO Muebles. Todos los derechos reservados.</span>
+        <span className={styles.devCredit}>
+          Desarrollado por{' '}
+          <a href="https://josueviturro.com" target="_blank" rel="noreferrer" className={styles.devLink}>
+            Josue Viturro
+          </a>
+        </span>
       </div>
     </footer>
   );

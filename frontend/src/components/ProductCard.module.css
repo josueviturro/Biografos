@@ -54,3 +54,15 @@
   font-size: 0.7rem !important;
   padding: 0.5rem 1rem !important;
 }
+
+.lowStock {
+  font-size: 0.75rem;
+  color: #FFA726;
+  margin-top: 0.25rem;
+}
+
+.noStock {
+  font-size: 0.75rem;
+  color: #EF5350;
+  margin-top: 0.25rem;
+}
