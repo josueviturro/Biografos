@@ -70,7 +70,7 @@ export default function AdminPage() {
           <span className={styles.sidebarSub}>Panel Admin</span>
         </div>
         <nav className={styles.sidebarNav}>
-          <a href="/" className={styles.sidebarLink} target="_blank" rel="noreferrer">← Ver tienda</a>
+          <a href="/#/" className={styles.sidebarLink}>← Ver tienda</a>
           <span className={styles.sidebarLinkActive}>Productos</span>
         </nav>
       </aside>

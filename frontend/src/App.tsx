@@ -1,6 +1,6 @@
 // --- Raíz de la app: rutas con React Router + estado global del carrito ---
 
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -13,7 +13,7 @@ import AdminPage from './pages/AdminPage';
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <CartProvider>
         <Routes>
           {/* Panel admin — layout propio sin header/footer de tienda */}
@@ -23,7 +23,7 @@ export default function App() {
           <Route path="*" element={<ShopLayout />} />
         </Routes>
       </CartProvider>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
