@@ -1,17 +1,25 @@
-// --- Página Home: Hero, Categorías destacadas, Más vendidos ---
+// --- Página Home: Hero, Categorías destacadas, Más vendidos desde Supabase ---
 
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import Button from '../components/Button';
 import ProductCard from '../components/ProductCard';
-import { MOCK_PRODUCTS } from '../data/products';
+import { getProductos } from '../services/productos';
+import type { Product } from '../types';
 import styles from './HomePage.module.css';
 
 const FEATURED_CATEGORIES = ['Dormitorio', 'Mesas', 'Almacenamiento'];
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const bestSellers = MOCK_PRODUCTS.slice(0, 3);
+  const [bestSellers, setBestSellers] = useState<Product[]>([]);
+
+  useEffect(() => {
+    getProductos()
+      .then((data) => setBestSellers(data.slice(0, 3)))
+      .catch(() => {});
+  }, []);
 
   return (
     <main>

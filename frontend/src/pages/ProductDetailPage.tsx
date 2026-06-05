@@ -1,60 +1,94 @@
-// --- Página detalle de producto: descripción, selector cantidad, agregar al carrito ---
+// --- Página detalle de producto desde Supabase ---
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import Button from '../components/Button';
 import QuantitySelector from '../components/QuantitySelector';
-import { MOCK_PRODUCTS } from '../data/products';
+import { getProductoById } from '../services/productos';
 import { formatPrice } from '../utils/format';
 import { useCart } from '../context/CartContext';
+import type { Product } from '../types';
 import styles from './ProductDetailPage.module.css';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const [imgIndex, setImgIndex] = useState(0);
 
-  const product = MOCK_PRODUCTS.find((p) => p.id === Number(id));
+  useEffect(() => {
+    if (!id) return;
+    getProductoById(id)
+      .then(setProduct)
+      .finally(() => setLoading(false));
+  }, [id]);
 
-  if (!product) {
-    return (
-      <main className={styles.notFound}>
-        <p>Producto no encontrado.</p>
-        <button onClick={() => navigate('/catalogo')} className={styles.backBtn}>
-          <ArrowLeft size={18} /> Volver al catálogo
-        </button>
-      </main>
-    );
-  }
+  if (loading) return <main className={styles.main}><p className={styles.msg}>Cargando...</p></main>;
+  if (!product) return (
+    <main className={styles.main}>
+      <p className={styles.msg}>Producto no encontrado.</p>
+      <button className={styles.backBtn} onClick={() => navigate('/catalogo')}>
+        <ArrowLeft size={18} /> Volver al catálogo
+      </button>
+    </main>
+  );
 
-  const handleAddToCart = () => {
-    addToCart(product, quantity);
-    navigate('/carrito');
-  };
+  const imagenes = product.imagenes ?? [];
+  const imgActual = imagenes[imgIndex];
 
   return (
     <main className={styles.main}>
 
-      {/* Botón volver */}
       <button className={styles.backBtn} onClick={() => navigate('/catalogo')}>
         <ArrowLeft size={18} /> Volver al Catálogo
       </button>
 
       <div className={styles.layout}>
 
-        {/* ── Detalle del producto ── */}
+        {/* ── Galería de imágenes ── */}
+        {imagenes.length > 0 && (
+          <div className={styles.gallery}>
+            <div className={styles.mainImage}>
+              <img src={imgActual} alt={product.nombre} />
+            </div>
+            {imagenes.length > 1 && (
+              <div className={styles.thumbnails}>
+                {imagenes.map((img, i) => (
+                  <div
+                    key={i}
+                    className={`${styles.thumb} ${i === imgIndex ? styles.thumbActive : ''}`}
+                    onClick={() => setImgIndex(i)}
+                  >
+                    <img src={img} alt={`Vista ${i + 1}`} />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Info del producto ── */}
         <div className={styles.info}>
-          <p className={styles.category}>{product.category}</p>
-          <h1 className={styles.name}>{product.name}</h1>
-          <p className={styles.price}>{formatPrice(product.price)}</p>
+          {product.categorias?.nombre && (
+            <p className={styles.category}>{product.categorias.nombre}</p>
+          )}
+          <h1 className={styles.name}>{product.nombre}</h1>
+
+          <div className={styles.priceRow}>
+            <p className={styles.price}>{formatPrice(product.precio)}</p>
+            {product.precio_anterior && product.precio_anterior > product.precio && (
+              <p className={styles.pricePrev}>{formatPrice(product.precio_anterior)}</p>
+            )}
+          </div>
 
           <div className={styles.divider} />
 
-          <p className={styles.description}>{product.description}</p>
+          <p className={styles.description}>{product.descripcion}</p>
 
-          {/* Stock */}
           <p className={styles.stockInfo}>
             {product.stock > 3
               ? `Stock disponible: ${product.stock} unidades`
@@ -63,7 +97,6 @@ export default function ProductDetailPage() {
               : 'Sin stock'}
           </p>
 
-          {/* Selector de cantidad */}
           <div className={styles.quantityRow}>
             <QuantitySelector
               quantity={quantity}
@@ -72,8 +105,12 @@ export default function ProductDetailPage() {
             />
           </div>
 
-          <Button fullWidth onClick={handleAddToCart} disabled={product.stock === 0}>
-            Agregar al Carrito — {formatPrice(product.price * quantity)}
+          <Button
+            fullWidth
+            onClick={() => { addToCart(product, quantity); navigate('/carrito'); }}
+            disabled={product.stock === 0}
+          >
+            Agregar al Carrito — {formatPrice(product.precio * quantity)}
           </Button>
 
           <ul className={styles.benefits}>

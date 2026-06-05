@@ -1,4 +1,4 @@
-// --- Página carrito: lista de items, resumen y botón checkout ---
+// --- Página carrito ---
 
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
@@ -10,7 +10,7 @@ import styles from './CartPage.module.css';
 export default function CartPage() {
   const navigate = useNavigate();
   const { cart, updateCartQuantity, removeFromCart } = useCart();
-  const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const subtotal = cart.reduce((acc, item) => acc + item.precio * item.quantity, 0);
 
   if (cart.length === 0) {
     return (
@@ -29,15 +29,13 @@ export default function CartPage() {
       <h1 className={styles.pageTitle}>Tu Carrito</h1>
 
       <div className={styles.layout}>
-
-        {/* ── Lista de productos ── */}
         <div className={styles.itemsList}>
           {cart.map((item) => (
             <div key={item.id} className={styles.item}>
               <div className={styles.itemInfo}>
-                <h3 className={styles.itemName}>{item.name}</h3>
-                <p className={styles.itemCategory}>{item.category}</p>
-                <p className={styles.itemPrice}>{formatPrice(item.price)}</p>
+                <h3 className={styles.itemName}>{item.nombre}</h3>
+                <p className={styles.itemCategory}>{item.categorias?.nombre}</p>
+                <p className={styles.itemPrice}>{formatPrice(item.precio)}</p>
               </div>
               <div className={styles.itemActions}>
                 <QuantitySelector
@@ -53,32 +51,20 @@ export default function CartPage() {
           ))}
         </div>
 
-        {/* ── Resumen de compra ── */}
         <aside className={styles.summary}>
           <h3 className={styles.summaryTitle}>Resumen de Compra</h3>
           <div className={styles.summaryRows}>
-            <div className={styles.summaryRow}>
-              <span>Subtotal</span>
-              <span>{formatPrice(subtotal)}</span>
-            </div>
-            <div className={styles.summaryRow}>
-              <span>Envío</span>
-              <span>Gratis</span>
-            </div>
+            <div className={styles.summaryRow}><span>Subtotal</span><span>{formatPrice(subtotal)}</span></div>
+            <div className={styles.summaryRow}><span>Envío</span><span>Gratis</span></div>
           </div>
           <div className={styles.divider} />
           <div className={styles.totalRow}>
             <span>Total</span>
             <span className={styles.totalAmount}>{formatPrice(subtotal)}</span>
           </div>
-          <Button fullWidth onClick={() => navigate('/checkout')}>
-            Iniciar Compra
-          </Button>
-          <button className={styles.continueBtn} onClick={() => navigate('/catalogo')}>
-            Seguir comprando
-          </button>
+          <Button fullWidth onClick={() => navigate('/checkout')}>Iniciar Compra</Button>
+          <button className={styles.continueBtn} onClick={() => navigate('/catalogo')}>Seguir comprando</button>
         </aside>
-
       </div>
     </main>
   );

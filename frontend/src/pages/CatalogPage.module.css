@@ -80,7 +80,24 @@
 }
 
 .filterItem:hover {
-  color: var(--color-green-light);
+  color: var(--color-accent);
+}
+
+.filterItemActive {
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+.message {
+  color: var(--color-gray);
+  font-size: 0.95rem;
+  padding: 2rem 0;
+}
+
+.messageError {
+  color: #EF5350;
+  font-size: 0.95rem;
+  padding: 2rem 0;
 }
 
 /* ── Grilla ── */

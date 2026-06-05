@@ -10,7 +10,7 @@ import styles from './CheckoutPage.module.css';
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const { cart } = useCart();
-  const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const total = cart.reduce((acc, item) => acc + item.precio * item.quantity, 0);
 
   return (
     <main className={styles.main}>
@@ -48,8 +48,8 @@ export default function CheckoutPage() {
           <ul className={styles.itemsList}>
             {cart.map((item) => (
               <li key={item.id} className={styles.summaryItem}>
-                <span className={styles.summaryItemName}>{item.quantity}× {item.name}</span>
-                <span>{formatPrice(item.price * item.quantity)}</span>
+                <span className={styles.summaryItemName}>{item.quantity}× {item.nombre}</span>
+                <span>{formatPrice(item.precio * item.quantity)}</span>
               </li>
             ))}
           </ul>

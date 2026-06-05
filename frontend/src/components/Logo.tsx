@@ -12,7 +12,7 @@ export default function Logo({ className = '' }: LogoProps) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path d="M250 50 L450 450 H50 L250 50Z" fill="var(--color-gold)" />
+      <path d="M250 50 L490 450 H10 L250 50Z" fill="var(--color-gold)" />
       <path
         d="M380 450 C380 350 300 300 250 300 C200 300 120 350 120 450"
         stroke="var(--color-black)"

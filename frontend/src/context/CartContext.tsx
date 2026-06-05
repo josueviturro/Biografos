@@ -1,4 +1,4 @@
-// --- Contexto global del carrito, accesible desde cualquier página ---
+// --- Contexto global del carrito ---
 
 import { createContext, useContext, useState, useMemo } from 'react';
 import type { CartItem, Product } from '../types';
@@ -7,8 +7,8 @@ interface CartContextType {
   cart: CartItem[];
   cartCount: number;
   addToCart: (product: Product, quantity?: number) => void;
-  updateCartQuantity: (id: number, quantity: number) => void;
-  removeFromCart: (id: number) => void;
+  updateCartQuantity: (id: string, quantity: number) => void;
+  removeFromCart: (id: string) => void;
 }
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -33,11 +33,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
-  const updateCartQuantity = (id: number, quantity: number) => {
+  const updateCartQuantity = (id: string, quantity: number) => {
     setCart((prev) => prev.map((i) => (i.id === id ? { ...i, quantity } : i)));
   };
 
-  const removeFromCart = (id: number) => {
+  const removeFromCart = (id: string) => {
     setCart((prev) => prev.filter((i) => i.id !== id));
   };
 
