@@ -46,7 +46,7 @@ export default function CheckoutPage() {
 
     try {
       // 1. Crear la orden en Supabase
-      await createOrden(
+      const orden = await createOrden(
         {
           cliente_nombre: form.nombre,
           cliente_apellido: form.apellido,
@@ -58,11 +58,12 @@ export default function CheckoutPage() {
         cart
       );
 
-      // 2. Crear preferencia en MercadoPago
+      // 2. Crear preferencia en MercadoPago pasando el ID de la orden
       const res = await fetch('/api/create-preference', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          order_id: orden.id,
           items: cart.map(item => ({
             nombre: item.nombre,
             precio: item.precio,

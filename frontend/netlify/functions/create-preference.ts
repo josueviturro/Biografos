@@ -1,6 +1,3 @@
-// --- Netlify Function: crea una preferencia de pago en MercadoPago ---
-// El Access Token nunca sale del servidor
-
 import type { Handler } from '@netlify/functions';
 import MercadoPago, { Preference } from 'mercadopago';
 
@@ -9,17 +6,12 @@ const client = new MercadoPago({
 });
 
 export const handler: Handler = async (event) => {
-  // Solo acepta POST
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method not allowed' };
   }
 
   try {
-    const { items } = JSON.parse(event.body ?? '{}');
-
-    if (!items || items.length === 0) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Sin items' }) };
-    }
+    const { items, order_id } = JSON.parse(event.body ?? '{}');
 
     const preference = new Preference(client);
 
@@ -31,6 +23,7 @@ export const handler: Handler = async (event) => {
           quantity: item.quantity,
           currency_id: 'ARS',
         })),
+        external_reference: order_id,
         back_urls: {
           success: `${process.env.URL}/#/pago-exitoso`,
           failure: `${process.env.URL}/#/pago-fallido`,
@@ -45,11 +38,7 @@ export const handler: Handler = async (event) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ init_point: response.init_point }),
     };
-  } catch (error) {
-    console.error('Error creando preferencia MP:', error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: 'Error al crear preferencia de pago' }),
-    };
+  } catch (error: any) {
+    return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
   }
 };

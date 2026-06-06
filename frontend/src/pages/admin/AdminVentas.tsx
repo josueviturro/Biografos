@@ -7,9 +7,10 @@ import styles from './AdminVentas.module.css';
 
 const ESTADOS: Record<string, { label: string; color: string }> = {
   pendiente:  { label: 'Pendiente',  color: '#FFA726' },
+  pagado:     { label: 'Pagado',     color: '#4CAF50' },
   preparando: { label: 'Preparando', color: '#42A5F5' },
   enviado:    { label: 'Enviado',    color: '#7E57C2' },
-  entregado:  { label: 'Entregado',  color: '#4CAF50' },
+  entregado:  { label: 'Entregado',  color: '#26A69A' },
   cancelado:  { label: 'Cancelado',  color: '#EF5350' },
 };
 

@@ -7,16 +7,13 @@ const app = express();
 app.use(express.json());
 app.use(cors({ origin: 'http://localhost:5173' }));
 
-console.log('Token cargado:', process.env.MP_ACCESS_TOKEN ? 'SI' : 'NO');
-
 const client = new MercadoPagoConfig({
   accessToken: process.env.MP_ACCESS_TOKEN,
 });
 
 app.post('/api/create-preference', async (req, res) => {
   try {
-    const { items } = req.body;
-    console.log('Items recibidos:', items);
+    const { items, order_id } = req.body;
 
     const preference = new Preference(client);
 
@@ -28,18 +25,21 @@ app.post('/api/create-preference', async (req, res) => {
           quantity: Number(item.quantity),
           currency_id: 'ARS',
         })),
-        // auto_return no funciona con localhost, se activa solo en producción
+        external_reference: order_id,   // ID de la orden en Supabase
+        back_urls: {
+          success: 'http://localhost:5173/#/pago-exitoso',
+          failure: 'http://localhost:5173/#/pago-fallido',
+          pending: 'http://localhost:5173/#/pago-pendiente',
+        },
+        // auto_return no funciona con HTTP localhost, solo en producción con HTTPS
       },
     });
 
-    console.log('Preferencia creada:', response.id);
     res.json({ init_point: response.init_point });
 
   } catch (error) {
-    console.error('Error completo:', JSON.stringify(error, null, 2));
-    console.error('Mensaje:', error.message);
-    console.error('Cause:', error.cause);
-    res.status(500).json({ error: error.message ?? 'Error al crear preferencia' });
+    console.error('Error MP:', error.message);
+    res.status(500).json({ error: error.message });
   }
 });
 
