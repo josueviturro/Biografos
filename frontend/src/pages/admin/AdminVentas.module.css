@@ -1,0 +1,80 @@
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.pageTitle {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  color: var(--color-white);
+}
+
+@media (min-width: 768px) {
+  .pageTitle { font-size: 1.5rem; }
+}
+
+.badge {
+  font-size: 0.75rem;
+  color: var(--color-gray);
+  background-color: #2a2a2a;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+}
+
+.tableWrapper {
+  background-color: #1A1A1A;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table {
+  width: 100%;
+  min-width: 600px;
+  border-collapse: collapse;
+}
+
+.table thead tr { background-color: #222222; }
+
+.table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-gray);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid #2a2a2a;
+  white-space: nowrap;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid #222222;
+  transition: background-color 0.15s;
+}
+.table tbody tr:hover { background-color: #222222; }
+.table tbody tr:last-child { border-bottom: none; }
+
+.table td {
+  padding: 0.85rem 1rem;
+  font-size: 0.85rem;
+  color: var(--color-white);
+}
+
+.tdId { color: var(--color-gray); font-size: 0.8rem; }
+.tdFecha { color: var(--color-gray); white-space: nowrap; }
+.tdCliente { font-weight: 500; }
+.tdProductos { color: var(--color-gray); max-width: 200px; }
+.tdTotal { color: var(--color-accent); font-weight: 500; white-space: nowrap; }
+
+.estadoBadge {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 20px;
+  border: 1px solid;
+  white-space: nowrap;
+  font-weight: 500;
+}

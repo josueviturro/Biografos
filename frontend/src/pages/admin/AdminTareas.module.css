@@ -1,0 +1,149 @@
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.pageTitle {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  color: var(--color-white);
+}
+
+@media (min-width: 768px) {
+  .pageTitle { font-size: 1.5rem; }
+}
+
+.badge {
+  font-size: 0.75rem;
+  color: var(--color-gray);
+  background-color: #2a2a2a;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+}
+
+/* Input nueva tarea */
+.inputRow {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.input {
+  flex: 1;
+  background-color: #1A1A1A;
+  border: 1px solid #333;
+  padding: 0.7rem 1rem;
+  border-radius: 4px;
+  color: var(--color-white);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.input::placeholder { color: #555; }
+.input:focus { border-color: var(--color-accent); }
+
+.addBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: var(--color-accent);
+  color: #000;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 0.2s;
+}
+.addBtn:hover { opacity: 0.85; }
+
+/* Secciones */
+.section {
+  margin-bottom: 1.5rem;
+}
+
+.sectionTitle {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-accent);
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.sectionTitleDone {
+  color: var(--color-gray);
+}
+
+/* Lista de tareas */
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background-color: #1A1A1A;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  transition: background-color 0.15s;
+}
+.item:hover { background-color: #222; }
+
+.itemDone {
+  opacity: 0.5;
+}
+
+.checkbox {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.texto {
+  flex: 1;
+  font-size: 0.9rem;
+  color: var(--color-white);
+}
+
+.textoDone {
+  text-decoration: line-through;
+  color: var(--color-gray);
+}
+
+.fecha {
+  font-size: 0.7rem;
+  color: var(--color-gray);
+  white-space: nowrap;
+}
+
+.deleteBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: #555;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 0.2rem;
+}
+.deleteBtn:hover { color: #EF5350; }
+
+.empty {
+  text-align: center;
+  color: var(--color-gray);
+  padding: 3rem 0;
+  font-size: 0.9rem;
+}

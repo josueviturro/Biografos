@@ -21,7 +21,7 @@ export default function CheckoutPage() {
     setPaying(true);
     setError(null);
     try {
-      const res = await fetch('/.netlify/functions/create-preference', {
+      const res = await fetch('/api/create-preference', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

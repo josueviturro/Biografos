@@ -32,9 +32,9 @@ export const handler: Handler = async (event) => {
           currency_id: 'ARS',
         })),
         back_urls: {
-          success: `${process.env.URL ?? 'http://localhost:8888'}/#/pago-exitoso`,
-          failure: `${process.env.URL ?? 'http://localhost:8888'}/#/pago-fallido`,
-          pending: `${process.env.URL ?? 'http://localhost:8888'}/#/pago-pendiente`,
+          success: `${process.env.URL}/#/pago-exitoso`,
+          failure: `${process.env.URL}/#/pago-fallido`,
+          pending: `${process.env.URL}/#/pago-pendiente`,
         },
         auto_return: 'approved',
       },
