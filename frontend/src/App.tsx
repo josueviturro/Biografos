@@ -1,6 +1,6 @@
 // --- Raíz de la app: rutas con React Router + estado global del carrito ---
 
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route, Outlet } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import Header from './components/Header';
@@ -23,12 +23,20 @@ export default function App() {
       <AuthProvider>
       <CartProvider>
         <Routes>
-          {/* Panel admin — layout propio sin header/footer */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/admin" element={<AdminPage />} />
 
-          {/* Tienda — layout con header y footer */}
-          <Route path="*" element={<ShopLayout />} />
+          <Route element={<ShopLayout />}>
+            <Route path="/"               element={<HomePage />} />
+            <Route path="/catalogo"       element={<CatalogPage />} />
+            <Route path="/producto/:id"   element={<ProductDetailPage />} />
+            <Route path="/carrito"        element={<CartPage />} />
+            <Route path="/checkout"       element={<CheckoutPage />} />
+            <Route path="/pago-exitoso"   element={<PagoExitosoPage />} />
+            <Route path="/pago-fallido"   element={<PagoFallidoPage />} />
+            <Route path="/pago-pendiente" element={<PagoPendientePage />} />
+            <Route path="*"               element={<NotFoundPage />} />
+          </Route>
         </Routes>
       </CartProvider>
       </AuthProvider>
@@ -41,17 +49,7 @@ function ShopLayout() {
     <>
       <Header />
       <div style={{ minHeight: 'calc(100vh - 5rem - 200px)' }}>
-        <Routes>
-          <Route path="/"                element={<HomePage />} />
-          <Route path="/catalogo"        element={<CatalogPage />} />
-          <Route path="/producto/:id"    element={<ProductDetailPage />} />
-          <Route path="/carrito"         element={<CartPage />} />
-          <Route path="/checkout"        element={<CheckoutPage />} />
-          <Route path="/pago-exitoso"    element={<PagoExitosoPage />} />
-          <Route path="/pago-fallido"    element={<PagoFallidoPage />} />
-          <Route path="/pago-pendiente"  element={<PagoPendientePage />} />
-          <Route path="*"               element={<NotFoundPage />} />
-        </Routes>
+        <Outlet />
       </div>
       <Footer />
     </>
