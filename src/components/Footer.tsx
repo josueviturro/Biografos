@@ -32,7 +32,7 @@ export default function Footer() {
               rel="noreferrer"
               className={styles.whatsappLink}
             >
-              +54 9 11 3202-4997
+             Hacé click para contactar por WhatsApp 
             </a>
           </div>
 
