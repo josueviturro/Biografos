@@ -1,10 +1,10 @@
 // --- Vercel API Route: webhook de MercadoPago ---
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import MercadoPago, { Payment } from 'mercadopago';
+import { MercadoPagoConfig, Payment } from 'mercadopago';
 import { createClient } from '@supabase/supabase-js';
 
-const mpClient = new MercadoPago({
+const mpClient = new MercadoPagoConfig({
   accessToken: process.env.MP_ACCESS_TOKEN!,
 });
 

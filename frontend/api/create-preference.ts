@@ -1,9 +1,9 @@
 // --- Vercel API Route: crea preferencia de pago en MercadoPago ---
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import MercadoPago, { Preference } from 'mercadopago';
+import { MercadoPagoConfig, Preference } from 'mercadopago';
 
-const client = new MercadoPago({
+const client = new MercadoPagoConfig({
   accessToken: process.env.MP_ACCESS_TOKEN!,
 });
 
