@@ -1,5 +1,6 @@
-// --- Página checkout: datos de envío + resumen + botón MercadoPago ---
+// --- Página checkout: datos de envío + resumen + pago con MercadoPago ---
 
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, CreditCard } from 'lucide-react';
 import Button from '../components/Button';
@@ -11,6 +12,40 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   const { cart } = useCart();
   const total = cart.reduce((acc, item) => acc + item.precio * item.quantity, 0);
+
+  const [paying, setPaying] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Llama a la Netlify Function que crea la preferencia en MercadoPago
+  const handlePagar = async () => {
+    setPaying(true);
+    setError(null);
+    try {
+      const res = await fetch('/.netlify/functions/create-preference', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: cart.map((item) => ({
+            nombre: item.nombre,
+            precio: item.precio,
+            quantity: item.quantity,
+          })),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error);
+
+      // Redirige a la página de pago de MercadoPago
+      window.location.href = data.init_point;
+    } catch (e) {
+      setError('No se pudo iniciar el pago. Intentá de nuevo.');
+      console.error(e);
+    } finally {
+      setPaying(false);
+    }
+  };
 
   return (
     <main className={styles.main}>
@@ -36,9 +71,9 @@ export default function CheckoutPage() {
             <input type="text" placeholder="Dirección de envío" className={styles.input} />
           </section>
 
-          <section className={`${styles.formSection} ${styles.formSectionDisabled}`}>
+          <section className={styles.formSection}>
             <h3 className={styles.formSectionTitle}>2. Método de Pago</h3>
-            <p className={styles.disabledText}>Completá los datos anteriores para continuar.</p>
+            <p className={styles.disabledText}>Al clickear el botón serás redirigido a MercadoPago.</p>
           </section>
         </div>
 
@@ -58,9 +93,13 @@ export default function CheckoutPage() {
             <span>Total a Pagar</span>
             <span className={styles.totalAmount}>{formatPrice(total)}</span>
           </div>
-          <Button variant="accent" fullWidth className={styles.mpBtn}>
-            <CreditCard size={20} /> Pagar con MercadoPago
+
+          {error && <p className={styles.errorMsg}>{error}</p>}
+
+          <Button variant="accent" fullWidth className={styles.mpBtn} onClick={handlePagar} disabled={paying}>
+            <CreditCard size={20} /> {paying ? 'Procesando...' : 'Pagar con MercadoPago'}
           </Button>
+
           <p className={styles.secureText}>
             <LockIcon /> Procesado de forma segura
           </p>

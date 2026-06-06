@@ -183,6 +183,12 @@
   font-weight: 600 !important;
 }
 
+.errorMsg {
+  color: #EF5350;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
 .secureText {
   display: flex;
   align-items: center;
