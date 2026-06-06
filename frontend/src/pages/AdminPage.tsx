@@ -1,6 +1,6 @@
 // --- Panel de administración: layout con sidebar y secciones ---
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Package, ShoppingBag, CheckSquare, LogOut } from 'lucide-react';
 import AdminProductos from './admin/AdminProductos';
@@ -22,16 +22,16 @@ export default function AdminPage() {
   const navigate = useNavigate();
   const [seccion, setSeccion] = useState<Seccion>('productos');
 
-  if (loading) return null;
-  if (!user) {
-    navigate('/login');
-    return null;
-  }
+  useEffect(() => {
+    if (!loading && !user) navigate('/login');
+  }, [loading, user, navigate]);
 
   const handleLogout = async () => {
     await logout();
     navigate('/login');
   };
+
+  if (loading || !user) return null;
 
   return (
     <div className={styles.layout}>
