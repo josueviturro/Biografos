@@ -58,15 +58,14 @@ export default function CheckoutPage() {
         cart
       );
 
-      // 2. Crear preferencia en MercadoPago pasando el ID de la orden
+      // 2. Crear preferencia en MercadoPago — precios los busca el servidor en la DB
       const res = await fetch('/api/create-preference', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           order_id: orden.id,
           items: cart.map(item => ({
-            nombre: item.nombre,
-            precio: item.precio,
+            product_id: item.id,
             quantity: item.quantity,
           })),
         }),
