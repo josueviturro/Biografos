@@ -23,7 +23,7 @@ export default function LoginPage() {
       return;
     }
 
-    navigate('/admin');
+    navigate('/adminpanel');
   };
 
   return (
