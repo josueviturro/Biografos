@@ -23,6 +23,7 @@
   border-radius: 20px;
 }
 
+/* Tabla */
 .tableWrapper {
   background-color: #1A1A1A;
   border: 1px solid #2a2a2a;
@@ -33,16 +34,16 @@
 
 .table {
   width: 100%;
-  min-width: 600px;
+  min-width: 900px;
   border-collapse: collapse;
 }
 
 .table thead tr { background-color: #222222; }
 
 .table th {
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 0.85rem;
   text-align: left;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 600;
   color: var(--color-gray);
   text-transform: uppercase;
@@ -59,19 +60,32 @@
 .table tbody tr:last-child { border-bottom: none; }
 
 .table td {
-  padding: 0.85rem 1rem;
-  font-size: 0.85rem;
+  padding: 0.8rem 0.85rem;
+  font-size: 0.83rem;
   color: var(--color-white);
 }
 
-.tdId { color: var(--color-gray); font-size: 0.8rem; }
-.tdFecha { color: var(--color-gray); white-space: nowrap; }
-.tdCliente { font-weight: 500; }
-.tdProductos { color: var(--color-gray); max-width: 200px; }
-.tdTotal { color: var(--color-accent); font-weight: 500; white-space: nowrap; }
+.tdId       { color: var(--color-gray); font-size: 0.8rem; width: 40px; }
+.tdFecha    { color: var(--color-gray); white-space: nowrap; }
+.tdCliente  { font-weight: 500; white-space: nowrap; }
+.tdProducto { color: var(--color-gray); }
+.tdDireccion { color: var(--color-gray); font-size: 0.78rem; max-width: 160px; }
+.tdEmail    { color: var(--color-gray); font-size: 0.78rem; }
+.tdTotal    { color: var(--color-accent); font-weight: 500; white-space: nowrap; }
 
+/* Link de WhatsApp */
+.waLink {
+  color: #25D366;
+  text-decoration: none;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+.waLink:hover { opacity: 0.75; text-decoration: underline; }
+
+/* Dropdown estado */
 .estadoSelect {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   padding: 0.25rem 0.5rem;
   border-radius: 20px;
   border: 1px solid;
@@ -88,7 +102,29 @@
   color: var(--color-white);
 }
 
-/* Modal confirmación */
+/* Botón eliminar */
+.deleteBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background-color: rgba(239, 83, 80, 0.1);
+  color: #EF5350;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.deleteBtn:hover { background-color: rgba(239, 83, 80, 0.25); }
+
+.empty {
+  padding: 2rem;
+  text-align: center;
+  color: var(--color-gray);
+}
+
+/* Modales */
 .overlay {
   position: fixed;
   inset: 0;
@@ -156,3 +192,17 @@
   transition: opacity 0.2s;
 }
 .btnSi:hover { opacity: 0.85; }
+
+.btnDelete {
+  padding: 0.6rem 1.5rem;
+  background-color: #EF5350;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+.btnDelete:hover { opacity: 0.85; }

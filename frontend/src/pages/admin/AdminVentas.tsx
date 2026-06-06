@@ -1,21 +1,25 @@
-// --- Sección Ventas: órdenes recibidas (conectará a Supabase) ---
+// --- Sección Ventas: órdenes recibidas ---
 
 import { useState } from 'react';
+import { Trash2 } from 'lucide-react';
 import styles from './AdminVentas.module.css';
 
 interface Venta {
-  id: string;
+  id: number;
   fecha: string;
   cliente: string;
-  productos: string;
+  producto: string;
+  direccion: string;
+  celular: string;
+  email: string;
   total: number;
   estado: string;
 }
 
 const MOCK_VENTAS: Venta[] = [
-  { id: '001', fecha: '2026-06-01', cliente: 'Juan Pérez',    productos: 'Cama de Pino x1',  total: 350000, estado: 'pendiente'  },
-  { id: '002', fecha: '2026-06-02', cliente: 'María García',  productos: 'Silla Tejida x4',  total: 260000, estado: 'preparando' },
-  { id: '003', fecha: '2026-06-03', cliente: 'Carlos López',  productos: 'Mesa Rústica x1',  total: 280000, estado: 'enviado'    },
+  { id: 1, fecha: '2026-06-01', cliente: 'Juan Pérez',   producto: 'Cama de Pino x1', direccion: 'Av. Corrientes 1234, CABA',      celular: '5491112345678', email: 'juan@mail.com',   total: 350000, estado: 'pendiente'  },
+  { id: 2, fecha: '2026-06-02', cliente: 'María García', producto: 'Silla Tejida x4', direccion: 'San Martín 456, Temperley',      celular: '5491198765432', email: 'maria@mail.com',  total: 260000, estado: 'preparando' },
+  { id: 3, fecha: '2026-06-03', cliente: 'Carlos López', producto: 'Mesa Rústica x1', direccion: 'Belgrano 789, Lomas de Zamora',  celular: '5491165432198', email: 'carlos@mail.com', total: 280000, estado: 'enviado'    },
 ];
 
 const ESTADOS: Record<string, { label: string; color: string }> = {
@@ -31,20 +35,22 @@ const formatPrice = (n: number) =>
 
 export default function AdminVentas() {
   const [ventas, setVentas] = useState<Venta[]>(MOCK_VENTAS);
+  const [confirm, setConfirm] = useState<{ id: number; nuevoEstado: string } | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
 
-  // Confirmación pendiente: { id de la venta, nuevo estado }
-  const [confirm, setConfirm] = useState<{ id: string; nuevoEstado: string } | null>(null);
-
-  const handleEstadoChange = (id: string, nuevoEstado: string) => {
+  const handleEstadoChange = (id: number, nuevoEstado: string) => {
     setConfirm({ id, nuevoEstado });
   };
 
   const confirmarCambio = () => {
     if (!confirm) return;
-    setVentas(prev =>
-      prev.map(v => v.id === confirm.id ? { ...v, estado: confirm.nuevoEstado } : v)
-    );
+    setVentas(prev => prev.map(v => v.id === confirm.id ? { ...v, estado: confirm.nuevoEstado } : v));
     setConfirm(null);
+  };
+
+  const handleDelete = (id: number) => {
+    setVentas(prev => prev.filter(v => v.id !== id));
+    setDeleteConfirm(null);
   };
 
   return (
@@ -61,21 +67,36 @@ export default function AdminVentas() {
               <th>#</th>
               <th>Fecha</th>
               <th>Cliente</th>
-              <th>Productos</th>
+              <th>Producto</th>
+              <th>Dirección</th>
+              <th>Celular</th>
+              <th>Email</th>
               <th>Total</th>
               <th>Estado</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             {ventas.map(v => (
               <tr key={v.id}>
-                <td className={styles.tdId}>#{v.id}</td>
+                <td className={styles.tdId}>{v.id}</td>
                 <td className={styles.tdFecha}>{v.fecha}</td>
                 <td className={styles.tdCliente}>{v.cliente}</td>
-                <td className={styles.tdProductos}>{v.productos}</td>
+                <td className={styles.tdProducto}>{v.producto}</td>
+                <td className={styles.tdDireccion}>{v.direccion}</td>
+                <td className={styles.tdCelular}>
+                  <a
+                    href={`https://wa.me/${v.celular}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={styles.waLink}
+                  >
+                    +{v.celular}
+                  </a>
+                </td>
+                <td className={styles.tdEmail}>{v.email}</td>
                 <td className={styles.tdTotal}>{formatPrice(v.total)}</td>
                 <td>
-                  {/* Dropdown para cambiar estado */}
                   <select
                     className={styles.estadoSelect}
                     value={v.estado}
@@ -87,13 +108,21 @@ export default function AdminVentas() {
                     ))}
                   </select>
                 </td>
+                <td>
+                  <button className={styles.deleteBtn} onClick={() => setDeleteConfirm(v.id)}>
+                    <Trash2 size={15} />
+                  </button>
+                </td>
               </tr>
             ))}
+            {ventas.length === 0 && (
+              <tr><td colSpan={10} className={styles.empty}>No hay órdenes todavía.</td></tr>
+            )}
           </tbody>
         </table>
       </div>
 
-      {/* Modal de confirmación */}
+      {/* Modal cambiar estado */}
       {confirm && (
         <div className={styles.overlay} onClick={() => setConfirm(null)}>
           <div className={styles.modal} onClick={e => e.stopPropagation()}>
@@ -107,6 +136,20 @@ export default function AdminVentas() {
             <div className={styles.modalActions}>
               <button className={styles.btnNo} onClick={() => setConfirm(null)}>No</button>
               <button className={styles.btnSi} onClick={confirmarCambio}>Sí, cambiar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal eliminar orden */}
+      {deleteConfirm !== null && (
+        <div className={styles.overlay} onClick={() => setDeleteConfirm(null)}>
+          <div className={styles.modal} onClick={e => e.stopPropagation()}>
+            <h3 className={styles.modalTitle}>¿Eliminar orden?</h3>
+            <p className={styles.modalText}>Esta acción no se puede deshacer.</p>
+            <div className={styles.modalActions}>
+              <button className={styles.btnNo} onClick={() => setDeleteConfirm(null)}>No</button>
+              <button className={styles.btnDelete} onClick={() => handleDelete(deleteConfirm)}>Sí, eliminar</button>
             </div>
           </div>
         </div>
