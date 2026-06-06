@@ -46,23 +46,24 @@ export default function Header() {
             <button className={styles.navLink} onClick={() => handleNav('/catalogo')}>Catálogo</button>
           </nav>
 
-          {/* Ícono carrito */}
-          <button
-            className={styles.cartBtn}
-            onClick={() => handleNav('/carrito')}
-            aria-label="Ver carrito"
-          >
-            <ShoppingCart size={24} />
-            {cartCount > 0 && (
-              <span className={styles.cartBadge}>{cartCount}</span>
-            )}
-          </button>
-
-          <button
-            className={styles.adminDot}
-            onClick={() => handleNav('/adminpanel')}
-            aria-label="Panel admin"
-          />
+          {/* Ícono carrito + punto admin */}
+          <div className={styles.cartGroup}>
+            <button
+              className={styles.cartBtn}
+              onClick={() => handleNav('/carrito')}
+              aria-label="Ver carrito"
+            >
+              <ShoppingCart size={24} />
+              {cartCount > 0 && (
+                <span className={styles.cartBadge}>{cartCount}</span>
+              )}
+            </button>
+            <button
+              className={styles.adminDot}
+              onClick={() => handleNav('/adminpanel')}
+              aria-label="Panel admin"
+            />
+          </div>
 
         </div>
       </div>

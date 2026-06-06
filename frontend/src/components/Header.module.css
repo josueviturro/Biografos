@@ -123,6 +123,13 @@
   border-radius: 9999px;
 }
 
+/* Carrito + punto admin */
+.cartGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 /* Punto admin */
 .adminDot {
   width: 6px;
