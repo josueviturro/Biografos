@@ -28,6 +28,17 @@
   flex-shrink: 0;
 }
 
+@media (min-width: 768px) {
+  .brand {
+    flex: 1;
+  }
+
+  .cartGroup {
+    flex: 1;
+    justify-content: flex-end;
+  }
+}
+
 .logoImg {
   height: 3rem;
   width: auto;
