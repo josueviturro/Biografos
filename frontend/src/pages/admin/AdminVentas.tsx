@@ -28,7 +28,7 @@ export default function AdminVentas() {
 
   useEffect(() => {
     getOrdenes()
-      .then(setOrdenes)
+      .then(data => setOrdenes(data.filter(o => o.estado !== 'pendiente')))
       .finally(() => setLoading(false));
   }, []);
 
