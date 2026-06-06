@@ -12,7 +12,6 @@ export interface Product {
   nombre: string;
   descripcion: string;
   precio: number;
-  precio_anterior?: number;
   stock: number;
   imagenes: string[];
   categoria_id: string;

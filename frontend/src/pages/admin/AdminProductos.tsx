@@ -11,7 +11,6 @@ import styles from './AdminPage.module.css';
 type ProductForm = {
   nombre: string;
   precio: number;
-  precio_anterior: number;
   stock: number;
   descripcion: string;
   imagenes: string[];
@@ -21,7 +20,7 @@ type ProductForm = {
 };
 
 const EMPTY_FORM: ProductForm = {
-  nombre: '', precio: 0, precio_anterior: 0, stock: 0,
+  nombre: '', precio: 0, stock: 0,
   descripcion: '', imagenes: [], categoria_id: '', slug: '', activo: true,
 };
 
@@ -45,7 +44,7 @@ export default function AdminProductos() {
 
   const handleEdit = (p: Product) => {
     setEditingProduct(p);
-    setForm({ nombre: p.nombre, precio: p.precio, precio_anterior: p.precio_anterior ?? 0,
+    setForm({ nombre: p.nombre, precio: p.precio,
       stock: p.stock, descripcion: p.descripcion, imagenes: p.imagenes ?? [],
       categoria_id: p.categoria_id, slug: p.slug, activo: p.activo });
     setModalOpen(true);
@@ -55,7 +54,7 @@ export default function AdminProductos() {
     if (!form.nombre || !form.precio) return;
     setSaving(true);
     try {
-      const payload = { ...form, precio_anterior: form.precio_anterior || undefined, imagenes: form.imagenes.filter(Boolean) };
+      const payload = { ...form, imagenes: form.imagenes.filter(Boolean) };
       if (editingProduct) {
         const updated = await updateProducto(editingProduct.id, payload);
         setProducts(prev => prev.map(p => p.id === editingProduct.id ? updated : p));
@@ -122,7 +121,6 @@ export default function AdminProductos() {
               <input className={styles.input} value={form.nombre} onChange={e => setForm({ ...form, nombre: e.target.value })} placeholder="Nombre del producto" />
               <div className={styles.inputRow}>
                 <div><label className={styles.fieldLabel}>Precio ($)</label><input className={styles.input} type="number" value={form.precio || ''} onChange={e => setForm({ ...form, precio: Number(e.target.value) })} /></div>
-                <div><label className={styles.fieldLabel}>Precio anterior ($)</label><input className={styles.input} type="number" value={form.precio_anterior || ''} onChange={e => setForm({ ...form, precio_anterior: Number(e.target.value) })} /></div>
               </div>
               <div className={styles.inputRow}>
                 <div><label className={styles.fieldLabel}>Stock</label><input className={styles.input} type="number" value={form.stock || ''} onChange={e => setForm({ ...form, stock: Number(e.target.value) })} /></div>

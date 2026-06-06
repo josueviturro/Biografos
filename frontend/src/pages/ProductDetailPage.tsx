@@ -80,9 +80,6 @@ export default function ProductDetailPage() {
 
           <div className={styles.priceRow}>
             <p className={styles.price}>{formatPrice(product.precio)}</p>
-            {product.precio_anterior && product.precio_anterior > product.precio && (
-              <p className={styles.pricePrev}>{formatPrice(product.precio_anterior)}</p>
-            )}
           </div>
 
           <div className={styles.divider} />
@@ -115,7 +112,6 @@ export default function ProductDetailPage() {
 
           <ul className={styles.benefits}>
             <li>Envío gratuito en CABA y GBA.</li>
-            <li>Garantía de 5 años en estructura.</li>
           </ul>
         </div>
 

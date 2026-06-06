@@ -40,9 +40,6 @@ export default function ProductCard({ product }: ProductCardProps) {
           </h3>
           <div className={styles.priceRow}>
             <p className={styles.price}>{formatPrice(product.precio)}</p>
-            {product.precio_anterior && product.precio_anterior > product.precio && (
-              <p className={styles.pricePrev}>{formatPrice(product.precio_anterior)}</p>
-            )}
           </div>
           {product.stock <= 3 && product.stock > 0 && (
             <p className={styles.lowStock}>¡Últimas {product.stock} unidades!</p>
