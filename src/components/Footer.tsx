@@ -38,7 +38,7 @@ export default function Footer() {
 
           {/* Columna 3: Mapa */}
           <div className={styles.mapCol}>
-            <h4 className={styles.colTitle}>Cómo llegarnos</h4>
+            <h4 className={styles.colTitle}>Nuestra ubicación</h4>
             <iframe
               className={styles.map}
               src="https://maps.google.com/maps?q=Salta+231+Temperley+Buenos+Aires+Argentina&output=embed&z=15"
