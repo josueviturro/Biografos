@@ -15,6 +15,7 @@ import LoginPage from './pages/LoginPage';
 import PagoExitosoPage from './pages/PagoExitosoPage';
 import PagoFallidoPage from './pages/PagoFallidoPage';
 import PagoPendientePage from './pages/PagoPendientePage';
+import NotFoundPage from './pages/NotFoundPage';
 
 export default function App() {
   return (
@@ -49,6 +50,7 @@ function ShopLayout() {
           <Route path="/pago-exitoso"    element={<PagoExitosoPage />} />
           <Route path="/pago-fallido"    element={<PagoFallidoPage />} />
           <Route path="/pago-pendiente"  element={<PagoPendientePage />} />
+          <Route path="*"               element={<NotFoundPage />} />
         </Routes>
       </div>
       <Footer />
