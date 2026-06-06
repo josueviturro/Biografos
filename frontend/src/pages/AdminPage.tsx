@@ -52,7 +52,7 @@ export default function AdminPage() {
               {item.icon}
             </button>
           ))}
-          <a href="/#/" className={styles.mobileTopBarLink}>← Tienda</a>
+          <a href="/" className={styles.mobileTopBarLink}>← Tienda</a>
           <button className={styles.mobileNavBtn} onClick={handleLogout} title="Cerrar sesión">
             <LogOut size={16} />
           </button>
@@ -66,7 +66,7 @@ export default function AdminPage() {
           <span className={styles.sidebarSub}>Panel Admin</span>
         </div>
         <nav className={styles.sidebarNav}>
-          <a href="/#/" className={styles.sidebarLink}>← Ver tienda</a>
+          <a href="/" className={styles.sidebarLink}>← Ver tienda</a>
           <div className={styles.sidebarDivider} />
           {NAV_ITEMS.map(item => (
             <button

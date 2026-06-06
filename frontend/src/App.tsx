@@ -1,6 +1,6 @@
 // --- Raíz de la app: rutas con React Router + estado global del carrito ---
 
-import { HashRouter, Routes, Route, Outlet } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import Header from './components/Header';
@@ -19,7 +19,7 @@ import NotFoundPage from './pages/NotFoundPage';
 
 export default function App() {
   return (
-    <HashRouter>
+    <BrowserRouter>
       <AuthProvider>
       <CartProvider>
         <Routes>
@@ -40,7 +40,7 @@ export default function App() {
         </Routes>
       </CartProvider>
       </AuthProvider>
-    </HashRouter>
+    </BrowserRouter>
   );
 }
 

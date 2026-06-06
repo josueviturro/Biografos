@@ -29,9 +29,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         external_reference: order_id,
         notification_url: `${baseUrl}/api/webhook`,
         back_urls: {
-          success: `${baseUrl}/#/pago-exitoso`,
-          failure: `${baseUrl}/#/pago-fallido`,
-          pending: `${baseUrl}/#/pago-pendiente`,
+          success: `${baseUrl}/pago-exitoso`,
+          failure: `${baseUrl}/pago-fallido`,
+          pending: `${baseUrl}/pago-pendiente`,
         },
         auto_return: 'approved',
       },
