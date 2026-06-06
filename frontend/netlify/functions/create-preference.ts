@@ -24,6 +24,7 @@ export const handler: Handler = async (event) => {
           currency_id: 'ARS',
         })),
         external_reference: order_id,
+        notification_url: `${process.env.URL}/.netlify/functions/webhook`,
         back_urls: {
           success: `${process.env.URL}/#/pago-exitoso`,
           failure: `${process.env.URL}/#/pago-fallido`,
