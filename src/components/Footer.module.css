@@ -90,6 +90,19 @@
   margin-bottom: 0.5rem;
 }
 
+.whatsappLink {
+  display: inline-block;
+  color: #4CAF50;
+  font-size: 0.875rem;
+  text-decoration: none;
+  margin-top: 0.25rem;
+  transition: opacity 0.2s;
+}
+
+.whatsappLink:hover {
+  opacity: 0.75;
+}
+
 /* Copyright */
 .copyright {
   border-top: 1px solid #222222;

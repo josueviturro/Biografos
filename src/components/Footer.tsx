@@ -26,6 +26,14 @@ export default function Footer() {
             <h4 className={styles.colTitle}>Contacto</h4>
             <p className={styles.contactText}> Salta 231 San Jose -Temperley, Provincia de Buenos Aires</p>
             <p className={styles.contactText}>info@biografo.com</p>
+            <a
+              href="https://wa.me/5491132024997"
+              target="_blank"
+              rel="noreferrer"
+              className={styles.whatsappLink}
+            >
+              +54 9 11 3202-4997
+            </a>
           </div>
 
         </div>
