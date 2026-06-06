@@ -1,10 +1,12 @@
 // --- Panel de administración: layout con sidebar y secciones ---
 
 import { useState } from 'react';
-import { Package, ShoppingBag, CheckSquare } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Package, ShoppingBag, CheckSquare, LogOut } from 'lucide-react';
 import AdminProductos from './admin/AdminProductos';
 import AdminVentas from './admin/AdminVentas';
 import AdminTareas from './admin/AdminTareas';
+import { useAuth } from '../context/AuthContext';
 import styles from './admin/AdminPage.module.css';
 
 type Seccion = 'productos' | 'ventas' | 'tareas';
@@ -16,7 +18,20 @@ const NAV_ITEMS: { key: Seccion; label: string; icon: React.ReactNode }[] = [
 ];
 
 export default function AdminPage() {
+  const { user, loading, logout } = useAuth();
+  const navigate = useNavigate();
   const [seccion, setSeccion] = useState<Seccion>('productos');
+
+  if (loading) return null;
+  if (!user) {
+    navigate('/login');
+    return null;
+  }
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
 
   return (
     <div className={styles.layout}>
@@ -38,6 +53,9 @@ export default function AdminPage() {
             </button>
           ))}
           <a href="/#/" className={styles.mobileTopBarLink}>← Tienda</a>
+          <button className={styles.mobileNavBtn} onClick={handleLogout} title="Cerrar sesión">
+            <LogOut size={16} />
+          </button>
         </div>
       </div>
 
@@ -59,6 +77,10 @@ export default function AdminPage() {
               {item.icon} {item.label}
             </button>
           ))}
+          <div className={styles.sidebarDivider} />
+          <button className={styles.sidebarLinkBtn} onClick={handleLogout}>
+            <LogOut size={16} /> Cerrar sesión
+          </button>
         </nav>
       </aside>
 

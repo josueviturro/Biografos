@@ -2,6 +2,7 @@
 
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
+import { AuthProvider } from './context/AuthContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
@@ -10,6 +11,7 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import AdminPage from './pages/AdminPage';
+import LoginPage from './pages/LoginPage';
 import PagoExitosoPage from './pages/PagoExitosoPage';
 import PagoFallidoPage from './pages/PagoFallidoPage';
 import PagoPendientePage from './pages/PagoPendientePage';
@@ -17,15 +19,18 @@ import PagoPendientePage from './pages/PagoPendientePage';
 export default function App() {
   return (
     <HashRouter>
+      <AuthProvider>
       <CartProvider>
         <Routes>
           {/* Panel admin — layout propio sin header/footer */}
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/admin" element={<AdminPage />} />
 
           {/* Tienda — layout con header y footer */}
           <Route path="*" element={<ShopLayout />} />
         </Routes>
       </CartProvider>
+      </AuthProvider>
     </HashRouter>
   );
 }
