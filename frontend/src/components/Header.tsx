@@ -58,6 +58,12 @@ export default function Header() {
             )}
           </button>
 
+          <button
+            className={styles.adminDot}
+            onClick={() => handleNav('/adminpanel')}
+            aria-label="Panel admin"
+          />
+
         </div>
       </div>
 

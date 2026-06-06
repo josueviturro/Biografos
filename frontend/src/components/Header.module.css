@@ -123,6 +123,24 @@
   border-radius: 9999px;
 }
 
+/* Punto admin */
+.adminDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--color-green-light);
+  border: none;
+  cursor: pointer;
+  opacity: 0.4;
+  padding: 0;
+  flex-shrink: 0;
+  transition: opacity 0.2s;
+}
+
+.adminDot:hover {
+  opacity: 1;
+}
+
 /* Botón menú mobile */
 .mobileMenuBtn {
   display: flex;
