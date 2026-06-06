@@ -24,7 +24,7 @@ export default function Footer() {
           {/* Columna 2: Contacto */}
           <div>
             <h4 className={styles.colTitle}>Contacto</h4>
-            <p className={styles.contactText}> Salta 231 San Jose -Temperley, Provincia de Buenos Aires</p>
+            <p className={styles.contactText}>Salta 231 San Jose - Temperley, Buenos Aires</p>
             <p className={styles.contactText}>info@biografo.com</p>
             <a
               href="https://wa.me/5491132024997"
@@ -32,8 +32,20 @@ export default function Footer() {
               rel="noreferrer"
               className={styles.whatsappLink}
             >
-             Hacé click para contactar por WhatsApp 
+              Hacé click para contactar por WhatsApp
             </a>
+          </div>
+
+          {/* Columna 3: Mapa */}
+          <div className={styles.mapCol}>
+            <h4 className={styles.colTitle}>Cómo llegarnos</h4>
+            <iframe
+              className={styles.map}
+              src="https://maps.google.com/maps?q=Salta+231+Temperley+Buenos+Aires+Argentina&output=embed&z=15"
+              title="Ubicación BIOGRAFO"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
           </div>
 
         </div>
