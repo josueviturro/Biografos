@@ -11,6 +11,34 @@ import styles from './HomePage.module.css';
 
 const FEATURED_CATEGORIES = ['Dormitorio', 'Mesas', 'Almacenamiento'];
 
+const STEPS = [
+  {
+    number: '01',
+    title: 'Elegí tu mueble',
+    text: 'Explorá nuestro catálogo y encontrá el mueble que mejor se adapte a tu espacio y estilo.',
+  },
+  {
+    number: '02',
+    title: 'Agregalo al carrito',
+    text: 'Seleccioná la cantidad y agregá el producto a tu carrito. Podés seguir comprando o proceder al pago.',
+  },
+  {
+    number: '03',
+    title: 'Completá tus datos',
+    text: 'Ingresá tu información de contacto y dirección de entrega para coordinar el envío.',
+  },
+  {
+    number: '04',
+    title: 'Elegí cómo recibir tu pedido',
+    text: 'Podés optar por el envío a domicilio con costo calculado según tu ubicación, o retirarlo directamente en nuestro local sin cargo.',
+  },
+  {
+    number: '05',
+    title: 'Pagá con MercadoPago',
+    text: 'Abonás de forma segura con el medio de pago que prefieras — tarjeta, transferencia o efectivo. Una vez confirmado el pago, nos ponemos en contacto para coordinar la entrega.',
+  },
+];
+
 export default function HomePage() {
   const navigate = useNavigate();
   const [bestSellers, setBestSellers] = useState<Product[]>([]);
@@ -74,6 +102,22 @@ export default function HomePage() {
           <div className={styles.productGrid}>
             {bestSellers.map((product) => (
               <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Guía de Compra ── */}
+      <section className={styles.guide}>
+        <div className={styles.container}>
+          <h2 className={styles.sectionTitle}>¿Cómo Comprar?</h2>
+          <div className={styles.stepsGrid}>
+            {STEPS.map((step) => (
+              <div key={step.number} className={styles.step}>
+                <span className={styles.stepNumber}>{step.number}</span>
+                <h3 className={styles.stepTitle}>{step.title}</h3>
+                <p className={styles.stepText}>{step.text}</p>
+              </div>
             ))}
           </div>
         </div>
