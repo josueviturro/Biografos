@@ -7,7 +7,7 @@ import { getProductos } from '../services/productos';
 import type { Product } from '../types';
 import styles from './CatalogPage.module.css';
 
-const CATEGORIES = ['Todos', 'Dormitorio', 'Mesas', 'Sillas', 'Almacenamiento', 'Recibidor'];
+const CATEGORIES = ['Todos', 'Dormitorio', 'Living', 'Comedor', 'Cocina', 'Baño', 'Oficina', 'Jardín', 'Quincho'];
 
 export default function CatalogPage() {
   const [products, setProducts] = useState<Product[]>([]);

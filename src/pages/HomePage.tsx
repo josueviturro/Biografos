@@ -9,7 +9,7 @@ import { getProductos } from '../services/productos';
 import type { Product } from '../types';
 import styles from './HomePage.module.css';
 
-const FEATURED_CATEGORIES = ['Dormitorio', 'Mesas', 'Almacenamiento'];
+const FEATURED_CATEGORIES = ['Dormitorio', 'Living', 'Comedor', 'Cocina', 'Baño', 'Oficina', 'Jardín', 'Quincho'];
 
 const STEPS = [
   {
