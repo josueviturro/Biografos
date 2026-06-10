@@ -42,7 +42,7 @@ const STEPS = [
 export default function HomePage() {
   const navigate = useNavigate();
   const [bestSellers, setBestSellers] = useState<Product[]>([]);
-  const [current, setCurrent] = useState(5);
+  const [current, setCurrent] = useState(4);
   const [cardWidth, setCardWidth] = useState(0);
   const viewportRef = useRef<HTMLDivElement>(null);
 
