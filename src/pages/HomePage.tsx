@@ -1,6 +1,6 @@
 // --- Página Home: Hero, Categorías destacadas, Más vendidos desde Supabase ---
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import Button from '../components/Button';
@@ -42,12 +42,36 @@ const STEPS = [
 export default function HomePage() {
   const navigate = useNavigate();
   const [bestSellers, setBestSellers] = useState<Product[]>([]);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const scrollLeft = useRef(0);
 
   useEffect(() => {
     getProductos()
       .then((data) => setBestSellers(data.slice(0, 3)))
       .catch(() => {});
   }, []);
+
+  const onMouseDown = (e: React.MouseEvent) => {
+    isDragging.current = true;
+    startX.current = e.pageX - (carouselRef.current?.offsetLeft ?? 0);
+    scrollLeft.current = carouselRef.current?.scrollLeft ?? 0;
+    if (carouselRef.current) carouselRef.current.style.cursor = 'grabbing';
+  };
+
+  const onMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging.current) return;
+    e.preventDefault();
+    const x = e.pageX - (carouselRef.current?.offsetLeft ?? 0);
+    const walk = (x - startX.current) * 1.5;
+    if (carouselRef.current) carouselRef.current.scrollLeft = scrollLeft.current - walk;
+  };
+
+  const onMouseUp = () => {
+    isDragging.current = false;
+    if (carouselRef.current) carouselRef.current.style.cursor = 'grab';
+  };
 
   return (
     <main>
@@ -75,18 +99,25 @@ export default function HomePage() {
       {/* ── Categorías Destacadas ── */}
       <section className={styles.categories}>
         <div className={styles.container}>
-          <h2 className={styles.sectionTitle}>Categorías Destacadas</h2>
-          <div className={styles.categoryGrid}>
-            {FEATURED_CATEGORIES.map((cat) => (
-              <div
-                key={cat}
-                className={styles.categoryCard}
-                onClick={() => navigate('/catalogo')}
-              >
-                <h3 className={styles.categoryName}>{cat}</h3>
-              </div>
-            ))}
-          </div>
+          <h2 className={styles.sectionTitle}>Elección por categorías</h2>
+        </div>
+        <div
+          ref={carouselRef}
+          className={styles.carousel}
+          onMouseDown={onMouseDown}
+          onMouseMove={onMouseMove}
+          onMouseUp={onMouseUp}
+          onMouseLeave={onMouseUp}
+        >
+          {FEATURED_CATEGORIES.map((cat) => (
+            <div
+              key={cat}
+              className={styles.categoryCard}
+              onClick={() => navigate('/catalogo')}
+            >
+              <h3 className={styles.categoryName}>{cat}</h3>
+            </div>
+          ))}
         </div>
       </section>
 

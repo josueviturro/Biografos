@@ -57,7 +57,7 @@
 
 /* ── Categorías ── */
 .categories {
-  padding: 5rem 0;
+  padding: 5rem 0 3rem;
 }
 
 .sectionTitle {
@@ -70,19 +70,27 @@
   text-align: center;
 }
 
-.categoryGrid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
+/* Carrusel */
+.carousel {
+  display: flex;
+  gap: 1.25rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 1.5rem 1.5rem;
+  cursor: grab;
+  scrollbar-width: none;
 }
 
-@media (min-width: 768px) {
-  .categoryGrid {
-    grid-template-columns: repeat(3, 1fr);
-  }
+.carousel::-webkit-scrollbar {
+  display: none;
 }
 
 .categoryCard {
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  /* mobile: casi toda la pantalla, se ve el borde del siguiente */
+  width: 72vw;
   height: 10rem;
   border-radius: 2px;
   cursor: pointer;
@@ -92,6 +100,22 @@
   align-items: center;
   justify-content: center;
   transition: border-color 0.3s, background-color 0.3s;
+  user-select: none;
+}
+
+/* tablet: 2-3 visibles */
+@media (min-width: 640px) {
+  .categoryCard {
+    width: 42vw;
+  }
+}
+
+/* desktop: 3-4 visibles */
+@media (min-width: 1024px) {
+  .categoryCard {
+    width: 22vw;
+    max-width: 280px;
+  }
 }
 
 .categoryCard:hover {
@@ -106,6 +130,7 @@
   text-transform: uppercase;
   letter-spacing: 0.2em;
   transition: color 0.3s;
+  pointer-events: none;
 }
 
 .categoryCard:hover .categoryName {
