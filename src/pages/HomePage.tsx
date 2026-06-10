@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, ChevronLeft } from 'lucide-react';
 import Button from '../components/Button';
 import ProductCard from '../components/ProductCard';
 import { getProductos } from '../services/productos';
@@ -42,10 +42,9 @@ const STEPS = [
 export default function HomePage() {
   const navigate = useNavigate();
   const [bestSellers, setBestSellers] = useState<Product[]>([]);
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const isDragging = useRef(false);
-  const startX = useRef(0);
-  const scrollLeft = useRef(0);
+  const [current, setCurrent] = useState(0);
+  const [cardWidth, setCardWidth] = useState(0);
+  const viewportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     getProductos()
@@ -53,24 +52,41 @@ export default function HomePage() {
       .catch(() => {});
   }, []);
 
-  const onMouseDown = (e: React.MouseEvent) => {
-    isDragging.current = true;
-    startX.current = e.pageX - (carouselRef.current?.offsetLeft ?? 0);
-    scrollLeft.current = carouselRef.current?.scrollLeft ?? 0;
-    if (carouselRef.current) carouselRef.current.style.cursor = 'grabbing';
+  // Mide el viewport y calcula el ancho de cada tarjeta
+  useEffect(() => {
+    const update = () => {
+      if (!viewportRef.current) return;
+      const w = viewportRef.current.offsetWidth;
+      const isMobile = window.innerWidth < 768;
+      setCardWidth(isMobile ? w : w / 3);
+    };
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
+
+  const isMobile = window.innerWidth < 768;
+  const total = FEATURED_CATEGORIES.length;
+
+  const prev = () => setCurrent((c: number) => Math.max(0, c - 1));
+  const next = () => setCurrent((c: number) => Math.min(total - 1, c + 1));
+
+  // Desplaza el track para centrar la tarjeta activa
+  const trackOffset = isMobile
+    ? -current * cardWidth
+    : (1 - current) * cardWidth;
+
+  const getCardState = (index: number) => {
+    const diff = index - current;
+    if (diff === 0) return 'active';
+    if (!isMobile && Math.abs(diff) === 1) return 'adjacent';
+    return 'hidden';
   };
 
-  const onMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging.current) return;
-    e.preventDefault();
-    const x = e.pageX - (carouselRef.current?.offsetLeft ?? 0);
-    const walk = (x - startX.current) * 1.5;
-    if (carouselRef.current) carouselRef.current.scrollLeft = scrollLeft.current - walk;
-  };
-
-  const onMouseUp = () => {
-    isDragging.current = false;
-    if (carouselRef.current) carouselRef.current.style.cursor = 'grab';
+  const stateClass = {
+    active:   styles.cardActive,
+    adjacent: styles.cardAdjacent,
+    hidden:   styles.cardHidden,
   };
 
   return (
@@ -101,23 +117,47 @@ export default function HomePage() {
         <div className={styles.container}>
           <h2 className={styles.sectionTitle}>Elección por categorías</h2>
         </div>
-        <div
-          ref={carouselRef}
-          className={styles.carousel}
-          onMouseDown={onMouseDown}
-          onMouseMove={onMouseMove}
-          onMouseUp={onMouseUp}
-          onMouseLeave={onMouseUp}
-        >
-          {FEATURED_CATEGORIES.map((cat) => (
+
+        <div className={styles.carouselWrapper}>
+          <button
+            className={styles.arrowBtn}
+            onClick={prev}
+            disabled={current === 0}
+            aria-label="Anterior"
+          >
+            <ChevronLeft size={22} />
+          </button>
+
+          <div ref={viewportRef} className={styles.carouselViewport}>
             <div
-              key={cat}
-              className={styles.categoryCard}
-              onClick={() => navigate('/catalogo')}
+              className={styles.carouselTrack}
+              style={{ transform: `translateX(${trackOffset}px)` }}
             >
-              <h3 className={styles.categoryName}>{cat}</h3>
+              {FEATURED_CATEGORIES.map((cat, index) => (
+                <div
+                  key={cat}
+                  className={`${styles.categoryCard} ${stateClass[getCardState(index)]}`}
+                  style={{ width: cardWidth || undefined }}
+                  onClick={() =>
+                    getCardState(index) === 'active'
+                      ? navigate('/catalogo')
+                      : setCurrent(index)
+                  }
+                >
+                  <h3 className={styles.categoryName}>{cat}</h3>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          <button
+            className={styles.arrowBtn}
+            onClick={next}
+            disabled={current === total - 1}
+            aria-label="Siguiente"
+          >
+            <ChevronRight size={22} />
+          </button>
         </div>
       </section>
 

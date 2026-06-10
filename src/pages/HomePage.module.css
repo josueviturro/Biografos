@@ -55,7 +55,7 @@
   margin: 0 auto;
 }
 
-/* ── Categorías ── */
+/* ── Categorías / Carrusel ── */
 .categories {
   padding: 5rem 0 3rem;
 }
@@ -70,57 +70,61 @@
   text-align: center;
 }
 
-/* Carrusel */
-.carousel {
+.carouselWrapper {
   display: flex;
-  gap: 1.25rem;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  padding: 0 1.5rem 1.5rem;
-  cursor: grab;
-  scrollbar-width: none;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 1.5rem;
 }
 
-.carousel::-webkit-scrollbar {
-  display: none;
+.carouselViewport {
+  flex: 1;
+  overflow: hidden;
+}
+
+.carouselTrack {
+  display: flex;
+  transition: transform 0.45s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .categoryCard {
   flex-shrink: 0;
-  scroll-snap-align: start;
-  /* mobile: casi toda la pantalla, se ve el borde del siguiente */
-  width: 72vw;
   height: 10rem;
   border-radius: 2px;
-  cursor: pointer;
   border: 1px solid #333333;
   background-color: #222222;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: border-color 0.3s, background-color 0.3s;
+  cursor: pointer;
   user-select: none;
+  transition: opacity 0.4s ease, transform 0.4s ease, border-color 0.3s, background-color 0.3s;
 }
 
-/* tablet: 2-3 visibles */
-@media (min-width: 640px) {
-  .categoryCard {
-    width: 42vw;
-  }
+/* Estados del carrusel */
+.cardActive {
+  opacity: 1;
+  transform: scale(1);
 }
 
-/* desktop: 3-4 visibles */
-@media (min-width: 1024px) {
-  .categoryCard {
-    width: 22vw;
-    max-width: 280px;
-  }
-}
-
-.categoryCard:hover {
+.cardActive:hover {
   border-color: var(--color-accent);
   background-color: #2a2a2a;
+}
+
+.cardActive:hover .categoryName {
+  color: var(--color-accent);
+}
+
+.cardAdjacent {
+  opacity: 0.4;
+  transform: scale(0.9);
+}
+
+.cardHidden {
+  opacity: 0;
+  transform: scale(0.75);
+  pointer-events: none;
 }
 
 .categoryName {
@@ -133,8 +137,30 @@
   pointer-events: none;
 }
 
-.categoryCard:hover .categoryName {
+/* Flechas */
+.arrowBtn {
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  border: 1px solid #333333;
+  background: #1a1a1a;
+  color: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.arrowBtn:hover:not(:disabled) {
+  border-color: var(--color-accent);
   color: var(--color-accent);
+}
+
+.arrowBtn:disabled {
+  opacity: 0.25;
+  cursor: default;
 }
 
 /* ── Más vendidos ── */
