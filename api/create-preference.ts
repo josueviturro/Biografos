@@ -41,6 +41,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const producto = productos.find((p) => p.id === item.product_id);
       if (!producto) throw new Error(`Producto ${item.product_id} no encontrado`);
       return {
+        id: producto.id as string,
         title: producto.nombre as string,
         unit_price: producto.precio as number,
         quantity: item.quantity,
