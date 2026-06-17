@@ -1,0 +1,47 @@
+// --- Cálculo de distancia y costo de envío usando Nominatim + OSRM ---
+
+const STORE_ADDRESS = 'Salta 231, Temperley, Buenos Aires, Argentina';
+
+export type CostoEnvio = number | 'convenir';
+
+export interface ShippingResult {
+  km: number;
+  costo: CostoEnvio;
+  storeCoords: [number, number];
+  clientCoords: [number, number];
+}
+
+async function geocode(address: string): Promise<[number, number]> {
+  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
+  const res = await fetch(url, { headers: { 'Accept-Language': 'es' } });
+  const data = await res.json();
+  if (!data[0]) throw new Error('No se encontró la dirección. Revisá calle, número y localidad.');
+  return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+}
+
+async function getKm(from: [number, number], to: [number, number]): Promise<number> {
+  const [latA, lonA] = from;
+  const [latB, lonB] = to;
+  const url = `https://router.project-osrm.org/route/v1/driving/${lonA},${latA};${lonB},${latB}?overview=false`;
+  const res = await fetch(url);
+  const data = await res.json();
+  if (!data.routes?.[0]) throw new Error('No se pudo calcular la ruta.');
+  return data.routes[0].distance / 1000;
+}
+
+function calcularCosto(km: number): CostoEnvio {
+  if (km <= 2)  return 12000;
+  if (km <= 5)  return 25000;
+  if (km <= 10) return 50000;
+  return 'convenir';
+}
+
+export async function calcularEnvio(calle: string, localidad: string): Promise<ShippingResult> {
+  const clientAddress = `${calle}, ${localidad}, Buenos Aires, Argentina`;
+  const [storeCoords, clientCoords] = await Promise.all([
+    geocode(STORE_ADDRESS),
+    geocode(clientAddress),
+  ]);
+  const km = await getKm(storeCoords, clientCoords);
+  return { km, costo: calcularCosto(km), storeCoords, clientCoords };
+}

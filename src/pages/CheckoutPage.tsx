@@ -1,13 +1,17 @@
 // --- Página checkout: datos de envío + resumen + pago con MercadoPago ---
 
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, CreditCard } from 'lucide-react';
+import { ArrowLeft, CreditCard, MapPin, Loader2 } from 'lucide-react';
 import Button from '../components/Button';
 import { useCart } from '../context/CartContext';
 import { formatPrice } from '../utils/format';
 import { createOrden } from '../services/ordenes';
+import { calcularEnvio } from '../services/shipping';
+import type { ShippingResult } from '../services/shipping';
 import styles from './CheckoutPage.module.css';
+
+const ShippingMap = lazy(() => import('../components/ShippingMap'));
 
 interface FormData {
   nombre: string;
@@ -15,66 +19,84 @@ interface FormData {
   celular: string;
   email: string;
   direccion: string;
+  localidad: string;
 }
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const { cart } = useCart();
-  const total = cart.reduce((acc, item) => acc + item.precio * item.quantity, 0);
+  const subtotal = cart.reduce((acc, item) => acc + item.precio * item.quantity, 0);
 
   const [form, setForm] = useState<FormData>({
-    nombre: '', apellido: '', celular: '', email: '', direccion: '',
+    nombre: '', apellido: '', celular: '', email: '', direccion: '', localidad: '',
   });
+  const [shipping, setShipping] = useState<ShippingResult | null>(null);
+  const [calculando, setCalculando] = useState(false);
+  const [shippingError, setShippingError] = useState<string | null>(null);
   const [paying, setPaying] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleChange = (field: keyof FormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm(prev => ({ ...prev, [field]: e.target.value }));
+    if (field === 'direccion' || field === 'localidad') setShipping(null);
   };
 
-  const formCompleto = form.nombre && form.apellido && form.celular && form.email && form.direccion;
-
-  const handlePagar = async () => {
-    if (!formCompleto) {
-      setError('Por favor completá todos los campos.');
+  const handleCalcularEnvio = async () => {
+    if (!form.direccion || !form.localidad) {
+      setShippingError('Ingresá la calle/número y la localidad.');
       return;
     }
+    setCalculando(true);
+    setShippingError(null);
+    setShipping(null);
+    try {
+      const result = await calcularEnvio(form.direccion, form.localidad);
+      setShipping(result);
+    } catch (e: any) {
+      setShippingError(e.message ?? 'No se pudo calcular la distancia.');
+    } finally {
+      setCalculando(false);
+    }
+  };
+
+  const costoEnvio = shipping && typeof shipping.costo === 'number' ? shipping.costo : 0;
+  const total = subtotal + costoEnvio;
+
+  const formCompleto = form.nombre && form.apellido && form.celular && form.email && form.direccion && form.localidad;
+
+  const handlePagar = async () => {
+    if (!formCompleto) { setError('Por favor completá todos los campos.'); return; }
+    if (!shipping) { setError('Calculá el costo de envío antes de pagar.'); return; }
+    if (shipping.costo === 'convenir') { setError('Tu distancia requiere coordinar el envío por WhatsApp.'); return; }
     if (cart.length === 0) return;
 
     setPaying(true);
     setError(null);
 
     try {
-      // 1. Crear la orden en Supabase
       const orden = await createOrden(
         {
           cliente_nombre: form.nombre,
           cliente_apellido: form.apellido,
           cliente_email: form.email,
           cliente_celular: form.celular,
-          cliente_direccion: form.direccion,
+          cliente_direccion: `${form.direccion}, ${form.localidad}`,
           total,
         },
         cart
       );
 
-      // 2. Crear preferencia en MercadoPago — precios los busca el servidor en la DB
       const res = await fetch('/api/create-preference', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           order_id: orden.id,
-          items: cart.map(item => ({
-            product_id: item.id,
-            quantity: item.quantity,
-          })),
+          items: cart.map(item => ({ product_id: item.id, quantity: item.quantity })),
         }),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-
-      // 3. Redirigir a MercadoPago
       window.location.href = data.init_point;
 
     } catch (e) {
@@ -96,10 +118,12 @@ export default function CheckoutPage() {
 
       <div className={styles.layout}>
 
-        {/* ── Formulario de envío ── */}
+        {/* ── Formulario ── */}
         <div className={styles.form}>
+
+          {/* Paso 1: Datos */}
           <section className={styles.formSection}>
-            <h3 className={styles.formSectionTitle}>1. Datos de Contacto y Envío</h3>
+            <h3 className={styles.formSectionTitle}>1. Datos de Contacto</h3>
             <div className={styles.inputGrid}>
               <input type="text" placeholder="Nombre *" className={styles.input}
                 value={form.nombre} onChange={handleChange('nombre')} />
@@ -110,17 +134,74 @@ export default function CheckoutPage() {
               value={form.celular} onChange={handleChange('celular')} />
             <input type="email" placeholder="Email *" className={styles.input}
               value={form.email} onChange={handleChange('email')} />
-            <input type="text" placeholder="Dirección de envío *" className={styles.input}
-              value={form.direccion} onChange={handleChange('direccion')} />
           </section>
 
+          {/* Paso 2: Envío */}
           <section className={styles.formSection}>
-            <h3 className={styles.formSectionTitle}>2. Método de Pago</h3>
+            <h3 className={styles.formSectionTitle}>2. Dirección de Envío</h3>
+            <input type="text" placeholder="Calle y número *" className={styles.input}
+              value={form.direccion} onChange={handleChange('direccion')} />
+            <input type="text" placeholder="Localidad / Ciudad *" className={styles.input}
+              value={form.localidad} onChange={handleChange('localidad')} />
+
+            <button
+              className={styles.calcBtn}
+              onClick={handleCalcularEnvio}
+              disabled={calculando}
+            >
+              {calculando
+                ? <><Loader2 size={16} className={styles.spin} /> Calculando...</>
+                : <><MapPin size={16} /> Calcular costo de envío</>
+              }
+            </button>
+
+            {shippingError && <p className={styles.shippingError}>{shippingError}</p>}
+
+            {shipping && (
+              <div className={styles.shippingResult}>
+                <Suspense fallback={<div className={styles.mapPlaceholder}>Cargando mapa...</div>}>
+                  <ShippingMap
+                    storeCoords={shipping.storeCoords}
+                    clientCoords={shipping.clientCoords}
+                    km={shipping.km}
+                  />
+                </Suspense>
+
+                <div className={styles.shippingInfo}>
+                  <span className={styles.shippingKm}>
+                    Distancia: <strong>{shipping.km.toFixed(1)} km</strong>
+                  </span>
+                  {shipping.costo === 'convenir' ? (
+                    <div className={styles.convenir}>
+                      <p>Tu distancia supera los 10 km. El costo de envío se coordina por WhatsApp.</p>
+                      <a
+                        href="https://wa.me/5491132024997"
+                        target="_blank"
+                        rel="noreferrer"
+                        className={styles.waLink}
+                      >
+                        Contactar por WhatsApp
+                      </a>
+                    </div>
+                  ) : (
+                    <span className={styles.shippingCost}>
+                      Envío: <strong>{formatPrice(shipping.costo)}</strong>
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+          </section>
+
+          {/* Paso 3: Pago */}
+          <section className={styles.formSection}>
+            <h3 className={styles.formSectionTitle}>3. Método de Pago</h3>
             <p className={styles.disabledText}>Al clickear el botón serás redirigido a MercadoPago.</p>
           </section>
+
         </div>
 
-        {/* ── Resumen del pedido ── */}
+        {/* ── Resumen ── */}
         <aside className={styles.summary}>
           <h3 className={styles.summaryTitle}>Resumen del Pedido</h3>
           <ul className={styles.itemsList}>
@@ -132,8 +213,22 @@ export default function CheckoutPage() {
             ))}
           </ul>
           <div className={styles.divider} />
+
           <div className={styles.totalRow}>
-            <span>Total a Pagar</span>
+            <span>Subtotal</span>
+            <span>{formatPrice(subtotal)}</span>
+          </div>
+
+          {shipping && shipping.costo !== 'convenir' && (
+            <div className={styles.totalRow}>
+              <span>Envío</span>
+              <span>{formatPrice(shipping.costo as number)}</span>
+            </div>
+          )}
+
+          <div className={styles.divider} />
+          <div className={`${styles.totalRow} ${styles.totalFinal}`}>
+            <span>Total</span>
             <span className={styles.totalAmount}>{formatPrice(total)}</span>
           </div>
 
@@ -144,7 +239,7 @@ export default function CheckoutPage() {
             fullWidth
             className={styles.mpBtn}
             onClick={handlePagar}
-            disabled={paying}
+            disabled={paying || !shipping || shipping.costo === 'convenir'}
           >
             <CreditCard size={20} /> {paying ? 'Procesando...' : 'Pagar con MercadoPago'}
           </Button>
