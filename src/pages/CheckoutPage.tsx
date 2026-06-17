@@ -176,12 +176,15 @@ export default function CheckoutPage() {
                 onFocus={() => suggestions.length > 0 && setShowDropdown(true)}
               />
               {showDropdown && (
-                <ul className={styles.dropdown}>
+                <ul
+                  className={styles.dropdown}
+                  onMouseDown={e => e.preventDefault()}
+                >
                   {suggestions.map((sug, i) => (
                     <li
                       key={i}
                       className={styles.dropdownItem}
-                      onMouseDown={() => handleSelectSuggestion(sug)}
+                      onClick={() => handleSelectSuggestion(sug)}
                     >
                       {sug.display_name.split(',').slice(0, 4).join(',')}
                     </li>
