@@ -13,10 +13,10 @@ export interface ShippingResult {
 }
 
 async function geocode(address: string): Promise<[number, number]> {
-  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
+  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1&countrycodes=ar`;
   const res = await fetch(url, { headers: { 'Accept-Language': 'es' } });
   const data = await res.json();
-  if (!data[0]) throw new Error('No se encontró la dirección. Revisá calle, número y localidad.');
+  if (!data[0]) throw new Error('No se encontró la dirección. Seleccioná una opción del listado desplegable.');
   return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
 }
 

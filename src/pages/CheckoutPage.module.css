@@ -203,6 +203,16 @@
   color: var(--color-gray);
 }
 
+.addressConfirmed {
+  font-size: 0.78rem;
+  color: #4CAF50;
+  margin-bottom: 0.25rem;
+}
+
+.inputConfirmed {
+  border-color: #4CAF50 !important;
+}
+
 /* ── Autocomplete dirección ── */
 .addressWrapper {
   position: relative;

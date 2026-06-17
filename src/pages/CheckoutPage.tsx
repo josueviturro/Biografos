@@ -165,11 +165,14 @@ export default function CheckoutPage() {
           <section className={styles.formSection}>
             <h3 className={styles.formSectionTitle}>2. Dirección de Envío</h3>
 
+            {selectedCoords && (
+              <p className={styles.addressConfirmed}>✓ Dirección seleccionada correctamente</p>
+            )}
             <div className={styles.addressWrapper}>
               <input
                 type="text"
                 placeholder="Ej: La Rioja 1138, Adrogué *"
-                className={styles.input}
+                className={`${styles.input} ${selectedCoords ? styles.inputConfirmed : ''}`}
                 value={direccion}
                 onChange={e => handleAddressInput(e.target.value)}
                 onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
