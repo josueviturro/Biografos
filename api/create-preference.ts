@@ -2,7 +2,6 @@
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { MercadoPagoConfig, Preference } from 'mercadopago';
-import type { Items } from 'mercadopago/dist/clients/commonTypes';
 import { createClient } from '@supabase/supabase-js';
 
 const client = new MercadoPagoConfig({
@@ -38,7 +37,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(500).json({ error: 'Error al obtener productos' });
     }
 
-    const mpItems: Items[] = items.map((item: { product_id: string; quantity: number }) => {
+    const mpItems = items.map((item: { product_id: string; quantity: number }) => {
       const producto = productos.find((p) => p.id === item.product_id);
       if (!producto) throw new Error(`Producto ${item.product_id} no encontrado`);
       return {
