@@ -14,8 +14,10 @@ export interface ShippingResult {
 
 async function geocode(address: string): Promise<[number, number]> {
   const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1&countrycodes=ar`;
+  console.log('[SHIPPING] Geocoding:', address);
   const res = await fetch(url, { headers: { 'Accept-Language': 'es' } });
   const data = await res.json();
+  console.log('[SHIPPING] Geocode result:', data);
   if (!data[0]) throw new Error('No se encontró la dirección. Seleccioná una opción del listado desplegable.');
   return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
 }
@@ -24,8 +26,10 @@ async function getKm(from: [number, number], to: [number, number]): Promise<numb
   const [latA, lonA] = from;
   const [latB, lonB] = to;
   const url = `https://router.project-osrm.org/route/v1/driving/${lonA},${latA};${lonB},${latB}?overview=false`;
+  console.log('[SHIPPING] Routing:', url);
   const res = await fetch(url);
   const data = await res.json();
+  console.log('[SHIPPING] Route result:', data);
   if (!data.routes?.[0]) throw new Error('No se pudo calcular la ruta.');
   return data.routes[0].distance / 1000;
 }

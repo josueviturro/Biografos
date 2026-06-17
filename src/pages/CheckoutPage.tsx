@@ -68,21 +68,28 @@ export default function CheckoutPage() {
   };
 
   const handleSelectSuggestion = (sug: Suggestion) => {
-    setDireccion(sug.display_name.split(',').slice(0, 3).join(',').trim());
-    setSelectedCoords([parseFloat(sug.lat), parseFloat(sug.lon)]);
+    console.log('[SHIPPING] Suggestion selected:', sug.display_name, sug.lat, sug.lon);
+    const short = sug.display_name.split(',').slice(0, 3).join(',').trim();
+    const coords: [number, number] = [parseFloat(sug.lat), parseFloat(sug.lon)];
+    setDireccion(short);
+    setSelectedCoords(coords);
     setSuggestions([]);
     setShowDropdown(false);
+    console.log('[SHIPPING] Coords set:', coords);
   };
 
   const handleCalcularEnvio = async () => {
     if (!direccion) { setShippingError('Ingresá tu dirección.'); return; }
+    console.log('[SHIPPING] Calcular clicked. direccion:', direccion, '| selectedCoords:', selectedCoords);
     setCalculando(true);
     setShippingError(null);
     setShipping(null);
     try {
       const result = await calcularEnvio(direccion, selectedCoords ?? undefined);
+      console.log('[SHIPPING] Result:', result);
       setShipping(result);
     } catch (e: any) {
+      console.error('[SHIPPING] Error:', e);
       setShippingError(e.message ?? 'No se pudo calcular la distancia.');
     } finally {
       setCalculando(false);
