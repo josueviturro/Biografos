@@ -163,7 +163,6 @@ export default function CheckoutPage() {
                   <ShippingMap
                     storeCoords={shipping.storeCoords}
                     clientCoords={shipping.clientCoords}
-                    km={shipping.km}
                   />
                 </Suspense>
 

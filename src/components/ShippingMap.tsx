@@ -1,6 +1,5 @@
 // --- Mapa de envío con Leaflet ---
 
-import { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -24,10 +23,9 @@ const storeIcon = new L.Icon({
 interface Props {
   storeCoords: [number, number];
   clientCoords: [number, number];
-  km: number;
 }
 
-export default function ShippingMap({ storeCoords, clientCoords, km }: Props) {
+export default function ShippingMap({ storeCoords, clientCoords }: Props) {
   const center: [number, number] = [
     (storeCoords[0] + clientCoords[0]) / 2,
     (storeCoords[1] + clientCoords[1]) / 2,
@@ -45,10 +43,10 @@ export default function ShippingMap({ storeCoords, clientCoords, km }: Props) {
         attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
       />
       <Marker position={storeCoords} icon={storeIcon}>
-        <Popup>📦 BIOGRAFO — Salta 231, Temperley</Popup>
+        <Popup>BIOGRAFO — Salta 231, Temperley</Popup>
       </Marker>
       <Marker position={clientCoords}>
-        <Popup>🏠 Tu domicilio</Popup>
+        <Popup>Tu domicilio</Popup>
       </Marker>
     </MapContainer>
   );
