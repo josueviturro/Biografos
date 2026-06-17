@@ -57,8 +57,7 @@ export default function CheckoutPage() {
     debounceRef.current = setTimeout(async () => {
       try {
         const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(value)}&format=json&limit=5&countrycodes=ar`,
-          { headers: { 'Accept-Language': 'es' } }
+          `/api/geocode?q=${encodeURIComponent(value)}&limit=5`
         );
         const data: Suggestion[] = await res.json();
         setSuggestions(data);
