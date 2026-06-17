@@ -1,6 +1,7 @@
 // --- Cálculo de distancia y costo de envío usando Nominatim + OSRM ---
 
-const STORE_ADDRESS = 'Salta 231, Temperley, Buenos Aires, Argentina';
+// Coordenadas fijas del local — evita geocodificar siempre la misma dirección
+const STORE_COORDS: [number, number] = [-34.7912, -58.3985]; // Salta 231, Temperley
 
 export type CostoEnvio = number | 'convenir';
 
@@ -40,12 +41,8 @@ export async function calcularEnvio(
   clientAddress: string,
   precomputedClientCoords?: [number, number]
 ): Promise<ShippingResult> {
-  const [storeCoords, clientCoords] = await Promise.all([
-    geocode(STORE_ADDRESS),
-    precomputedClientCoords
-      ? Promise.resolve(precomputedClientCoords)
-      : geocode(clientAddress),
-  ]);
+  const storeCoords = STORE_COORDS;
+  const clientCoords = precomputedClientCoords ?? await geocode(clientAddress);
   const km = await getKm(storeCoords, clientCoords);
   return { km, costo: calcularCosto(km), storeCoords, clientCoords };
 }
