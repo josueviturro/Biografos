@@ -1,6 +1,6 @@
 // --- Página checkout: datos de envío + resumen + pago con MercadoPago ---
 
-import { useState, lazy, Suspense } from 'react';
+import { useState, useRef, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, CreditCard, MapPin, Loader2 } from 'lucide-react';
 import Button from '../components/Button';
@@ -18,8 +18,12 @@ interface FormData {
   apellido: string;
   celular: string;
   email: string;
-  direccion: string;
-  localidad: string;
+}
+
+interface Suggestion {
+  display_name: string;
+  lat: string;
+  lon: string;
 }
 
 export default function CheckoutPage() {
@@ -27,9 +31,13 @@ export default function CheckoutPage() {
   const { cart } = useCart();
   const subtotal = cart.reduce((acc, item) => acc + item.precio * item.quantity, 0);
 
-  const [form, setForm] = useState<FormData>({
-    nombre: '', apellido: '', celular: '', email: '', direccion: '', localidad: '',
-  });
+  const [form, setForm] = useState<FormData>({ nombre: '', apellido: '', celular: '', email: '' });
+  const [direccion, setDireccion] = useState('');
+  const [selectedCoords, setSelectedCoords] = useState<[number, number] | null>(null);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const [shipping, setShipping] = useState<ShippingResult | null>(null);
   const [calculando, setCalculando] = useState(false);
   const [shippingError, setShippingError] = useState<string | null>(null);
@@ -38,19 +46,41 @@ export default function CheckoutPage() {
 
   const handleChange = (field: keyof FormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm(prev => ({ ...prev, [field]: e.target.value }));
-    if (field === 'direccion' || field === 'localidad') setShipping(null);
+  };
+
+  const handleAddressInput = (value: string) => {
+    setDireccion(value);
+    setSelectedCoords(null);
+    setShipping(null);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (value.length < 6) { setSuggestions([]); setShowDropdown(false); return; }
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(value)}&format=json&limit=5&countrycodes=ar`,
+          { headers: { 'Accept-Language': 'es' } }
+        );
+        const data: Suggestion[] = await res.json();
+        setSuggestions(data);
+        setShowDropdown(data.length > 0);
+      } catch {}
+    }, 500);
+  };
+
+  const handleSelectSuggestion = (sug: Suggestion) => {
+    setDireccion(sug.display_name.split(',').slice(0, 3).join(',').trim());
+    setSelectedCoords([parseFloat(sug.lat), parseFloat(sug.lon)]);
+    setSuggestions([]);
+    setShowDropdown(false);
   };
 
   const handleCalcularEnvio = async () => {
-    if (!form.direccion || !form.localidad) {
-      setShippingError('Ingresá la calle/número y la localidad.');
-      return;
-    }
+    if (!direccion) { setShippingError('Ingresá tu dirección.'); return; }
     setCalculando(true);
     setShippingError(null);
     setShipping(null);
     try {
-      const result = await calcularEnvio(form.direccion, form.localidad);
+      const result = await calcularEnvio(direccion, selectedCoords ?? undefined);
       setShipping(result);
     } catch (e: any) {
       setShippingError(e.message ?? 'No se pudo calcular la distancia.');
@@ -61,8 +91,7 @@ export default function CheckoutPage() {
 
   const costoEnvio = shipping && typeof shipping.costo === 'number' ? shipping.costo : 0;
   const total = subtotal + costoEnvio;
-
-  const formCompleto = form.nombre && form.apellido && form.celular && form.email && form.direccion && form.localidad;
+  const formCompleto = form.nombre && form.apellido && form.celular && form.email && direccion;
 
   const handlePagar = async () => {
     if (!formCompleto) { setError('Por favor completá todos los campos.'); return; }
@@ -72,7 +101,6 @@ export default function CheckoutPage() {
 
     setPaying(true);
     setError(null);
-
     try {
       const orden = await createOrden(
         {
@@ -80,12 +108,11 @@ export default function CheckoutPage() {
           cliente_apellido: form.apellido,
           cliente_email: form.email,
           cliente_celular: form.celular,
-          cliente_direccion: `${form.direccion}, ${form.localidad}`,
+          cliente_direccion: direccion,
           total,
         },
         cart
       );
-
       const res = await fetch('/api/create-preference', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -94,11 +121,9 @@ export default function CheckoutPage() {
           items: cart.map(item => ({ product_id: item.id, quantity: item.quantity })),
         }),
       });
-
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       window.location.href = data.init_point;
-
     } catch (e) {
       setError('No se pudo iniciar el pago. Intentá de nuevo.');
       console.error(e);
@@ -139,16 +164,33 @@ export default function CheckoutPage() {
           {/* Paso 2: Envío */}
           <section className={styles.formSection}>
             <h3 className={styles.formSectionTitle}>2. Dirección de Envío</h3>
-            <input type="text" placeholder="Calle y número *" className={styles.input}
-              value={form.direccion} onChange={handleChange('direccion')} />
-            <input type="text" placeholder="Localidad / Ciudad *" className={styles.input}
-              value={form.localidad} onChange={handleChange('localidad')} />
 
-            <button
-              className={styles.calcBtn}
-              onClick={handleCalcularEnvio}
-              disabled={calculando}
-            >
+            <div className={styles.addressWrapper}>
+              <input
+                type="text"
+                placeholder="Ej: La Rioja 1138, Adrogué *"
+                className={styles.input}
+                value={direccion}
+                onChange={e => handleAddressInput(e.target.value)}
+                onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
+                onFocus={() => suggestions.length > 0 && setShowDropdown(true)}
+              />
+              {showDropdown && (
+                <ul className={styles.dropdown}>
+                  {suggestions.map((sug, i) => (
+                    <li
+                      key={i}
+                      className={styles.dropdownItem}
+                      onMouseDown={() => handleSelectSuggestion(sug)}
+                    >
+                      {sug.display_name.split(',').slice(0, 4).join(',')}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <button className={styles.calcBtn} onClick={handleCalcularEnvio} disabled={calculando}>
               {calculando
                 ? <><Loader2 size={16} className={styles.spin} /> Calculando...</>
                 : <><MapPin size={16} /> Calcular costo de envío</>
@@ -160,12 +202,8 @@ export default function CheckoutPage() {
             {shipping && (
               <div className={styles.shippingResult}>
                 <Suspense fallback={<div className={styles.mapPlaceholder}>Cargando mapa...</div>}>
-                  <ShippingMap
-                    storeCoords={shipping.storeCoords}
-                    clientCoords={shipping.clientCoords}
-                  />
+                  <ShippingMap storeCoords={shipping.storeCoords} clientCoords={shipping.clientCoords} />
                 </Suspense>
-
                 <div className={styles.shippingInfo}>
                   <span className={styles.shippingKm}>
                     Distancia: <strong>{shipping.km.toFixed(1)} km</strong>
@@ -173,12 +211,7 @@ export default function CheckoutPage() {
                   {shipping.costo === 'convenir' ? (
                     <div className={styles.convenir}>
                       <p>Tu distancia supera los 10 km. El costo de envío se coordina por WhatsApp.</p>
-                      <a
-                        href="https://wa.me/5491132024997"
-                        target="_blank"
-                        rel="noreferrer"
-                        className={styles.waLink}
-                      >
+                      <a href="https://wa.me/5491132024997" target="_blank" rel="noreferrer" className={styles.waLink}>
                         Contactar por WhatsApp
                       </a>
                     </div>
@@ -197,7 +230,6 @@ export default function CheckoutPage() {
             <h3 className={styles.formSectionTitle}>3. Método de Pago</h3>
             <p className={styles.disabledText}>Al clickear el botón serás redirigido a MercadoPago.</p>
           </section>
-
         </div>
 
         {/* ── Resumen ── */}
@@ -212,19 +244,16 @@ export default function CheckoutPage() {
             ))}
           </ul>
           <div className={styles.divider} />
-
           <div className={styles.totalRow}>
             <span>Subtotal</span>
             <span>{formatPrice(subtotal)}</span>
           </div>
-
           {shipping && shipping.costo !== 'convenir' && (
             <div className={styles.totalRow}>
               <span>Envío</span>
               <span>{formatPrice(shipping.costo as number)}</span>
             </div>
           )}
-
           <div className={styles.divider} />
           <div className={`${styles.totalRow} ${styles.totalFinal}`}>
             <span>Total</span>

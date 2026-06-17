@@ -203,6 +203,44 @@
   color: var(--color-gray);
 }
 
+/* ── Autocomplete dirección ── */
+.addressWrapper {
+  position: relative;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #1a1a1a;
+  border: 1px solid #444;
+  border-top: none;
+  border-radius: 0 0 2px 2px;
+  z-index: 20;
+  list-style: none;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.dropdownItem {
+  padding: 0.65rem 0.75rem;
+  font-size: 0.82rem;
+  color: var(--color-gray);
+  cursor: pointer;
+  border-bottom: 1px solid #2a2a2a;
+  transition: background 0.15s, color 0.15s;
+}
+
+.dropdownItem:last-child {
+  border-bottom: none;
+}
+
+.dropdownItem:hover {
+  background: #2a2a2a;
+  color: var(--color-white);
+}
+
 /* ── Calculador de envío ── */
 .calcBtn {
   display: inline-flex;

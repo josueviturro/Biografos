@@ -36,11 +36,15 @@ function calcularCosto(km: number): CostoEnvio {
   return 'convenir';
 }
 
-export async function calcularEnvio(calle: string, localidad: string): Promise<ShippingResult> {
-  const clientAddress = `${calle}, ${localidad}, Buenos Aires, Argentina`;
+export async function calcularEnvio(
+  clientAddress: string,
+  precomputedClientCoords?: [number, number]
+): Promise<ShippingResult> {
   const [storeCoords, clientCoords] = await Promise.all([
     geocode(STORE_ADDRESS),
-    geocode(clientAddress),
+    precomputedClientCoords
+      ? Promise.resolve(precomputedClientCoords)
+      : geocode(clientAddress),
   ]);
   const km = await getKm(storeCoords, clientCoords);
   return { km, costo: calcularCosto(km), storeCoords, clientCoords };
