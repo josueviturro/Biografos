@@ -213,6 +213,65 @@
   border-color: #4CAF50 !important;
 }
 
+/* ── Selector envío / retiro ── */
+.entregaToggle {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.entregaBtn {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  background: none;
+  border: 1px solid #444;
+  color: var(--color-gray);
+  border-radius: 2px;
+  font-size: 0.85rem;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.entregaBtn:hover {
+  border-color: var(--color-green-light);
+  color: var(--color-white);
+}
+
+.entregaBtnActive {
+  border-color: var(--color-green-light);
+  color: var(--color-white);
+  background: rgba(var(--color-green-light-rgb, 100, 160, 100), 0.08);
+}
+
+.entregaInstructivo {
+  font-size: 0.8rem;
+  color: var(--color-gray);
+  line-height: 1.5;
+  padding: 0.5rem 0.75rem;
+  border-left: 2px solid #444;
+}
+
+.retiroInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.75rem 1rem;
+  background: #1a1a1a;
+  border-radius: 2px;
+  font-size: 0.875rem;
+  color: var(--color-gray);
+}
+
+.retiroInfo strong {
+  color: var(--color-white);
+  font-size: 0.9rem;
+}
+
+.retiroSub {
+  font-size: 0.78rem;
+  color: #666;
+}
+
 /* ── Autocomplete dirección ── */
 .addressWrapper {
   position: relative;

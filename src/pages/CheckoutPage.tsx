@@ -32,6 +32,7 @@ export default function CheckoutPage() {
   const subtotal = cart.reduce((acc, item) => acc + item.precio * item.quantity, 0);
 
   const [form, setForm] = useState<FormData>({ nombre: '', apellido: '', celular: '', email: '' });
+  const [tipoEntrega, setTipoEntrega] = useState<'envio' | 'retiro'>('envio');
   const [direccion, setDireccion] = useState('');
   const [selectedCoords, setSelectedCoords] = useState<[number, number] | null>(null);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -56,9 +57,7 @@ export default function CheckoutPage() {
     if (value.length < 6) { setSuggestions([]); setShowDropdown(false); return; }
     debounceRef.current = setTimeout(async () => {
       try {
-        const res = await fetch(
-          `/api/geocode?q=${encodeURIComponent(value)}&limit=5`
-        );
+        const res = await fetch(`/api/geocode?q=${encodeURIComponent(value)}&limit=5`);
         const data: Suggestion[] = await res.json();
         setSuggestions(data);
         setShowDropdown(data.length > 0);
@@ -67,42 +66,41 @@ export default function CheckoutPage() {
   };
 
   const handleSelectSuggestion = (sug: Suggestion) => {
-    console.log('[SHIPPING] Suggestion selected:', sug.display_name, sug.lat, sug.lon);
     const short = sug.display_name.split(',').slice(0, 3).join(',').trim();
     const coords: [number, number] = [parseFloat(sug.lat), parseFloat(sug.lon)];
     setDireccion(short);
     setSelectedCoords(coords);
     setSuggestions([]);
     setShowDropdown(false);
-    console.log('[SHIPPING] Coords set:', coords);
   };
 
   const handleCalcularEnvio = async () => {
     if (!direccion) { setShippingError('Ingresá tu dirección.'); return; }
-    console.log('[SHIPPING] Calcular clicked. direccion:', direccion, '| selectedCoords:', selectedCoords);
     setCalculando(true);
     setShippingError(null);
     setShipping(null);
     try {
       const result = await calcularEnvio(direccion, selectedCoords ?? undefined);
-      console.log('[SHIPPING] Result:', result);
       setShipping(result);
     } catch (e: any) {
-      console.error('[SHIPPING] Error:', e);
       setShippingError(e.message ?? 'No se pudo calcular la distancia.');
     } finally {
       setCalculando(false);
     }
   };
 
-  const costoEnvio = shipping && typeof shipping.costo === 'number' ? shipping.costo : 0;
+  const costoEnvio = tipoEntrega === 'retiro' ? 0
+    : (shipping && typeof shipping.costo === 'number' ? shipping.costo : 0);
   const total = subtotal + costoEnvio;
-  const formCompleto = form.nombre && form.apellido && form.celular && form.email && direccion;
+  const formCompleto = form.nombre && form.apellido && form.celular && form.email &&
+    (tipoEntrega === 'retiro' || direccion);
 
   const handlePagar = async () => {
     if (!formCompleto) { setError('Por favor completá todos los campos.'); return; }
-    if (!shipping) { setError('Calculá el costo de envío antes de pagar.'); return; }
-    if (shipping.costo === 'convenir') { setError('Tu distancia requiere coordinar el envío por WhatsApp.'); return; }
+    if (tipoEntrega === 'envio' && !shipping) { setError('Calculá el costo de envío antes de pagar.'); return; }
+    if (tipoEntrega === 'envio' && shipping?.costo === 'convenir') {
+      setError('Tu distancia requiere coordinar el envío por WhatsApp.'); return;
+    }
     if (cart.length === 0) return;
 
     setPaying(true);
@@ -114,7 +112,7 @@ export default function CheckoutPage() {
           cliente_apellido: form.apellido,
           cliente_email: form.email,
           cliente_celular: form.celular,
-          cliente_direccion: direccion,
+          cliente_direccion: tipoEntrega === 'retiro' ? 'Retiro en el local' : direccion,
           total,
         },
         cart
@@ -167,72 +165,108 @@ export default function CheckoutPage() {
               value={form.email} onChange={handleChange('email')} />
           </section>
 
-          {/* Paso 2: Envío */}
+          {/* Paso 2: Entrega */}
           <section className={styles.formSection}>
-            <h3 className={styles.formSectionTitle}>2. Dirección de Envío</h3>
+            <h3 className={styles.formSectionTitle}>2. Entrega</h3>
 
-            {selectedCoords && (
-              <p className={styles.addressConfirmed}>✓ Dirección seleccionada correctamente</p>
-            )}
-            <div className={styles.addressWrapper}>
-              <input
-                type="text"
-                placeholder="Ej: La Rioja 1138, Adrogué *"
-                className={`${styles.input} ${selectedCoords ? styles.inputConfirmed : ''}`}
-                value={direccion}
-                onChange={e => handleAddressInput(e.target.value)}
-                onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
-                onFocus={() => suggestions.length > 0 && setShowDropdown(true)}
-              />
-              {showDropdown && (
-                <ul
-                  className={styles.dropdown}
-                  onMouseDown={e => e.preventDefault()}
-                >
-                  {suggestions.map((sug, i) => (
-                    <li
-                      key={i}
-                      className={styles.dropdownItem}
-                      onClick={() => handleSelectSuggestion(sug)}
-                    >
-                      {sug.display_name.split(',').slice(0, 4).join(',')}
-                    </li>
-                  ))}
-                </ul>
-              )}
+            <div className={styles.entregaToggle}>
+              <button
+                type="button"
+                className={`${styles.entregaBtn} ${tipoEntrega === 'envio' ? styles.entregaBtnActive : ''}`}
+                onClick={() => { setTipoEntrega('envio'); setShipping(null); setShippingError(null); }}
+              >
+                Envío a domicilio
+              </button>
+              <button
+                type="button"
+                className={`${styles.entregaBtn} ${tipoEntrega === 'retiro' ? styles.entregaBtnActive : ''}`}
+                onClick={() => { setTipoEntrega('retiro'); setShipping(null); setShippingError(null); }}
+              >
+                Retiro en el local
+              </button>
             </div>
 
-            <button className={styles.calcBtn} onClick={handleCalcularEnvio} disabled={calculando}>
-              {calculando
-                ? <><Loader2 size={16} className={styles.spin} /> Calculando...</>
-                : <><MapPin size={16} /> Calcular costo de envío</>
-              }
-            </button>
+            {tipoEntrega === 'envio' && (
+              <>
+                <p className={styles.entregaInstructivo}>
+                  Ingresá tu dirección completa (número primero, ej: "La Rioja 1138, Adrogué"),
+                  seleccioná una opción del listado y luego hacé click en "Calcular costo de envío".
+                </p>
 
-            {shippingError && <p className={styles.shippingError}>{shippingError}</p>}
-
-            {shipping && (
-              <div className={styles.shippingResult}>
-                <Suspense fallback={<div className={styles.mapPlaceholder}>Cargando mapa...</div>}>
-                  <ShippingMap storeCoords={shipping.storeCoords} clientCoords={shipping.clientCoords} />
-                </Suspense>
-                <div className={styles.shippingInfo}>
-                  <span className={styles.shippingKm}>
-                    Distancia: <strong>{shipping.km.toFixed(1)} km</strong>
-                  </span>
-                  {shipping.costo === 'convenir' ? (
-                    <div className={styles.convenir}>
-                      <p>Tu distancia supera los 10 km. El costo de envío se coordina por WhatsApp.</p>
-                      <a href="https://wa.me/5491132024997" target="_blank" rel="noreferrer" className={styles.waLink}>
-                        Contactar por WhatsApp
-                      </a>
-                    </div>
-                  ) : (
-                    <span className={styles.shippingCost}>
-                      Envío: <strong>{formatPrice(shipping.costo)}</strong>
-                    </span>
+                {selectedCoords && (
+                  <p className={styles.addressConfirmed}>✓ Dirección seleccionada correctamente</p>
+                )}
+                <div className={styles.addressWrapper}>
+                  <input
+                    type="text"
+                    placeholder="Ej: La Rioja 1138, Adrogué *"
+                    className={`${styles.input} ${selectedCoords ? styles.inputConfirmed : ''}`}
+                    value={direccion}
+                    onChange={e => handleAddressInput(e.target.value)}
+                    onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
+                    onFocus={() => suggestions.length > 0 && setShowDropdown(true)}
+                  />
+                  {showDropdown && (
+                    <ul
+                      className={styles.dropdown}
+                      onMouseDown={e => e.preventDefault()}
+                    >
+                      {suggestions.map((sug, i) => (
+                        <li
+                          key={i}
+                          className={styles.dropdownItem}
+                          onClick={() => handleSelectSuggestion(sug)}
+                        >
+                          {sug.display_name.split(',').slice(0, 4).join(',')}
+                        </li>
+                      ))}
+                    </ul>
                   )}
                 </div>
+
+                <button className={styles.calcBtn} onClick={handleCalcularEnvio} disabled={calculando}>
+                  {calculando
+                    ? <><Loader2 size={16} className={styles.spin} /> Calculando...</>
+                    : <><MapPin size={16} /> Calcular costo de envío</>
+                  }
+                </button>
+
+                {shippingError && <p className={styles.shippingError}>{shippingError}</p>}
+
+                {shipping && (
+                  <div className={styles.shippingResult}>
+                    <Suspense fallback={<div className={styles.mapPlaceholder}>Cargando mapa...</div>}>
+                      <ShippingMap storeCoords={shipping.storeCoords} clientCoords={shipping.clientCoords} />
+                    </Suspense>
+                    <div className={styles.shippingInfo}>
+                      <span className={styles.shippingKm}>
+                        Distancia: <strong>{shipping.km.toFixed(1)} km</strong>
+                      </span>
+                      {shipping.costo === 'convenir' ? (
+                        <div className={styles.convenir}>
+                          <p>Tu distancia supera los 10 km. El costo de envío se coordina por WhatsApp.</p>
+                          <a href="https://wa.me/5491132024997" target="_blank" rel="noreferrer" className={styles.waLink}>
+                            Contactar por WhatsApp
+                          </a>
+                        </div>
+                      ) : (
+                        <span className={styles.shippingCost}>
+                          Envío: <strong>{formatPrice(shipping.costo)}</strong>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {tipoEntrega === 'retiro' && (
+              <div className={styles.retiroInfo}>
+                <p>Podés pasar a retirar tu pedido en:</p>
+                <strong>Salta 231, San José, Almirante Brown</strong>
+                <p className={styles.retiroSub}>
+                  Coordinamos día y horario por WhatsApp una vez confirmado el pago.
+                </p>
               </div>
             )}
           </section>
@@ -260,7 +294,13 @@ export default function CheckoutPage() {
             <span>Subtotal</span>
             <span>{formatPrice(subtotal)}</span>
           </div>
-          {shipping && shipping.costo !== 'convenir' && (
+          {tipoEntrega === 'retiro' && (
+            <div className={styles.totalRow}>
+              <span>Envío</span>
+              <span style={{ color: '#4CAF50' }}>Gratis (retiro)</span>
+            </div>
+          )}
+          {tipoEntrega === 'envio' && shipping && shipping.costo !== 'convenir' && (
             <div className={styles.totalRow}>
               <span>Envío</span>
               <span>{formatPrice(shipping.costo as number)}</span>
@@ -279,7 +319,7 @@ export default function CheckoutPage() {
             fullWidth
             className={styles.mpBtn}
             onClick={handlePagar}
-            disabled={paying || !shipping || shipping.costo === 'convenir'}
+            disabled={paying || (tipoEntrega === 'envio' && (!shipping || shipping.costo === 'convenir'))}
           >
             <CreditCard size={20} /> {paying ? 'Procesando...' : 'Pagar con MercadoPago'}
           </Button>
