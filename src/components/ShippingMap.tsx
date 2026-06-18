@@ -43,7 +43,7 @@ export default function ShippingMap({ storeCoords, clientCoords }: Props) {
         attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
       />
       <Marker position={storeCoords} icon={storeIcon}>
-        <Popup>BIOGRAFO — Salta 231, San José</Popup>
+        <Popup>Muebles Biografo — Salta 231, San José</Popup>
       </Marker>
       <Marker position={clientCoords}>
         <Popup>Tu domicilio</Popup>

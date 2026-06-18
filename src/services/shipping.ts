@@ -1,7 +1,7 @@
 // --- Cálculo de distancia y costo de envío usando Nominatim + OSRM ---
 
 // Coordenadas fijas del local — evita geocodificar siempre la misma dirección
-const STORE_COORDS: [number, number] = [-34.7731670, -58.3525514]; // Salta 231, San José, Almirante Brown
+const STORE_COORDS: [number, number] = [-34.76369780924711, -58.359833337200385]; // Salta 231, San José, Almirante Brown
 
 export type CostoEnvio = number | 'convenir';
 
