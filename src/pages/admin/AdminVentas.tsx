@@ -66,6 +66,7 @@ export default function AdminVentas() {
                 <th>Fecha</th>
                 <th>Cliente</th>
                 <th>Productos</th>
+                <th>Envío</th>
                 <th>Dirección</th>
                 <th>Celular</th>
                 <th>Email</th>
@@ -81,6 +82,12 @@ export default function AdminVentas() {
                   <td className={styles.tdFecha}>{new Date(o.created_at).toLocaleDateString('es-AR')}</td>
                   <td className={styles.tdCliente}>{o.cliente_nombre} {o.cliente_apellido}</td>
                   <td className={styles.tdProducto}>{resumenItems(o)}</td>
+                  <td className={styles.tdEnvio}>
+                    {o.cliente_direccion === 'Retiro en el local'
+                      ? <span className={styles.envioNo}>No</span>
+                      : <span className={styles.envioSi}>Sí</span>
+                    }
+                  </td>
                   <td className={styles.tdDireccion}>{o.cliente_direccion}</td>
                   <td className={styles.tdCelular}>
                     <a href={`https://wa.me/${o.cliente_celular.replace(/\D/g, '')}`}
@@ -110,7 +117,7 @@ export default function AdminVentas() {
                 </tr>
               ))}
               {ordenes.length === 0 && (
-                <tr><td colSpan={10} className={styles.empty}>No hay órdenes todavía.</td></tr>
+                <tr><td colSpan={11} className={styles.empty}>No hay órdenes todavía.</td></tr>
               )}
             </tbody>
           </table>

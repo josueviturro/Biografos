@@ -69,6 +69,9 @@
 .tdFecha    { color: var(--color-gray); white-space: nowrap; }
 .tdCliente  { font-weight: 500; white-space: nowrap; }
 .tdProducto { color: var(--color-gray); }
+.tdEnvio     { text-align: center; white-space: nowrap; }
+.envioSi     { color: #4CAF50; font-weight: 500; font-size: 0.85rem; }
+.envioNo     { color: var(--color-gray); font-size: 0.85rem; }
 .tdDireccion { color: var(--color-gray); font-size: 0.78rem; max-width: 160px; }
 .tdEmail    { color: var(--color-gray); font-size: 0.78rem; }
 .tdTotal    { color: var(--color-accent); font-weight: 500; white-space: nowrap; }
