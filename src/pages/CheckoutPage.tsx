@@ -189,7 +189,7 @@ export default function CheckoutPage() {
             {tipoEntrega === 'envio' && (
               <>
                 <p className={styles.entregaInstructivo}>
-                  Ingresá tu dirección completa (número primero, ej: "La Rioja 1138, Adrogué"),
+                  Ingresá tu dirección completa (número primero, ej: "Calle 999, Adrogue"),
                   seleccioná una opción del listado y luego hacé click en "Calcular costo de envío".
                 </p>
 
@@ -199,7 +199,7 @@ export default function CheckoutPage() {
                 <div className={styles.addressWrapper}>
                   <input
                     type="text"
-                    placeholder="Ej: La Rioja 1138, Adrogué *"
+                    placeholder="Ej: Calle 999, Adrogué *"
                     className={`${styles.input} ${selectedCoords ? styles.inputConfirmed : ''}`}
                     value={direccion}
                     onChange={e => handleAddressInput(e.target.value)}
