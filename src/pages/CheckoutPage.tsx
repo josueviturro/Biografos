@@ -42,6 +42,7 @@ export default function CheckoutPage() {
   const [shipping, setShipping] = useState<ShippingResult | null>(null);
   const [calculando, setCalculando] = useState(false);
   const [shippingError, setShippingError] = useState<string | null>(null);
+  const [acuerdoEnvio, setAcuerdoEnvio] = useState(false);
   const [paying, setPaying] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -98,8 +99,8 @@ export default function CheckoutPage() {
   const handlePagar = async () => {
     if (!formCompleto) { setError('Por favor completá todos los campos.'); return; }
     if (tipoEntrega === 'envio' && !shipping) { setError('Calculá el costo de envío antes de pagar.'); return; }
-    if (tipoEntrega === 'envio' && shipping?.costo === 'convenir') {
-      setError('Tu distancia requiere coordinar el envío por WhatsApp.'); return;
+    if (tipoEntrega === 'envio' && shipping?.costo === 'convenir' && !acuerdoEnvio) {
+      setError('Contactá al vendedor por WhatsApp para acordar el costo de envío.'); return;
     }
     if (cart.length === 0) return;
 
@@ -244,10 +245,19 @@ export default function CheckoutPage() {
                       </span>
                       {shipping.costo === 'convenir' ? (
                         <div className={styles.convenir}>
-                          <p>Tu distancia supera los 10 km. El costo de envío se coordina por WhatsApp.</p>
-                          <a href="https://wa.me/5491132024997" target="_blank" rel="noreferrer" className={styles.waLink}>
-                            Contactar por WhatsApp
-                          </a>
+                          <p>Tu distancia supera los 10 km. Contactá al vendedor para acordar el costo de envío.</p>
+                          <div className={styles.convenirAcciones}>
+                            <a href="https://wa.me/5491132024997" target="_blank" rel="noreferrer" className={styles.waLink}>
+                              Contactar por WhatsApp
+                            </a>
+                            <button
+                              type="button"
+                              className={`${styles.acuerdoBtn} ${acuerdoEnvio ? styles.acuerdoBtnActivo : ''}`}
+                              onClick={() => setAcuerdoEnvio(v => !v)}
+                            >
+                              {acuerdoEnvio ? '✓ Envío acordado con el vendedor' : 'Envío acordado con el vendedor'}
+                            </button>
+                          </div>
                         </div>
                       ) : (
                         <span className={styles.shippingCost}>
@@ -319,7 +329,7 @@ export default function CheckoutPage() {
             fullWidth
             className={styles.mpBtn}
             onClick={handlePagar}
-            disabled={paying || (tipoEntrega === 'envio' && (!shipping || shipping.costo === 'convenir'))}
+            disabled={paying || (tipoEntrega === 'envio' && (!shipping || (shipping.costo === 'convenir' && !acuerdoEnvio)))}
           >
             <CreditCard size={20} /> {paying ? 'Procesando...' : 'Pagar con MercadoPago'}
           </Button>
