@@ -124,6 +124,7 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           order_id: orden.id,
           items: cart.map(item => ({ product_id: item.id, quantity: item.quantity })),
+          costo_envio: costoEnvio > 0 ? costoEnvio : undefined,
         }),
       });
       const data = await res.json();

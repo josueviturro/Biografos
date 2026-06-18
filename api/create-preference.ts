@@ -19,7 +19,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { items, order_id } = req.body;
+    const { items, order_id, costo_envio } = req.body;
     const baseUrl = process.env.APP_URL ?? `https://${process.env.VERCEL_URL}`;
 
     if (!Array.isArray(items) || items.length === 0) {
@@ -48,6 +48,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         currency_id: 'ARS',
       };
     });
+
+    if (typeof costo_envio === 'number' && costo_envio > 0) {
+      mpItems.push({
+        id: 'envio',
+        title: 'Costo de envío',
+        unit_price: costo_envio,
+        quantity: 1,
+        currency_id: 'ARS',
+      });
+    }
 
     const preference = new Preference(client);
 
