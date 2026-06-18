@@ -111,3 +111,17 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.backHome {
+  display: block;
+  text-align: center;
+  margin-top: 1.25rem;
+  font-size: 0.82rem;
+  color: var(--color-gray);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.backHome:hover {
+  color: var(--color-white);
+}

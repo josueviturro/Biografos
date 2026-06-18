@@ -66,6 +66,8 @@ export default function LoginPage() {
             {loading ? 'Ingresando...' : 'Ingresar'}
           </button>
         </form>
+
+        <a href="/" className={styles.backHome}>← Volver a la tienda</a>
       </div>
     </div>
   );
