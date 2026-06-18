@@ -13,20 +13,42 @@ const supabase = createClient(
   process.env.SUPABASE_KEY!
 );
 
+const STORE_COORDS: [number, number] = [-34.76369780924711, -58.359833337200385];
+
+async function calcularKmServidor(clientLat: number, clientLon: number): Promise<number> {
+  const [storeLat, storeLon] = STORE_COORDS;
+  const url = `https://router.project-osrm.org/route/v1/driving/${storeLon},${storeLat};${clientLon},${clientLat}?overview=false`;
+  const res = await fetch(url);
+  const data = await res.json();
+  if (!data.routes?.[0]) throw new Error('No se pudo calcular la ruta.');
+  return data.routes[0].distance / 1000;
+}
+
+async function getCostoEnvio(km: number): Promise<number | null> {
+  const { data } = await supabase
+    .from('tarifas_envio')
+    .select('costo')
+    .gte('km_hasta', km)
+    .order('km_hasta', { ascending: true })
+    .limit(1)
+    .single();
+  return data?.costo ?? null; // null = convenir (>10km)
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { items, order_id, costo_envio } = req.body;
+    const { items, order_id, client_lat, client_lon } = req.body;
     const baseUrl = process.env.APP_URL ?? `https://${process.env.VERCEL_URL}`;
 
     if (!Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ error: 'Items inválidos' });
     }
 
-    // Buscar precios reales desde la DB — nunca confiar en los del cliente
+    // Precios desde la DB — nunca confiar en los del cliente
     const productIds = items.map((i: { product_id: string }) => i.product_id);
     const { data: productos, error: dbError } = await supabase
       .from('productos')
@@ -49,14 +71,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       };
     });
 
-    if (typeof costo_envio === 'number' && costo_envio > 0) {
-      mpItems.push({
-        id: 'envio',
-        title: 'Costo de envío',
-        unit_price: costo_envio,
-        quantity: 1,
-        currency_id: 'ARS',
-      });
+    // Calcular costo de envío server-side si el cliente mandó coordenadas
+    if (typeof client_lat === 'number' && typeof client_lon === 'number') {
+      const km = await calcularKmServidor(client_lat, client_lon);
+      const costo = await getCostoEnvio(km);
+      if (costo !== null) {
+        mpItems.push({
+          id: 'envio',
+          title: 'Costo de envío',
+          unit_price: costo,
+          quantity: 1,
+          currency_id: 'ARS',
+        });
+      }
     }
 
     const preference = new Preference(client);
