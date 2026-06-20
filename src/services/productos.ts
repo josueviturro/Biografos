@@ -70,3 +70,22 @@ export async function deleteProducto(id: string): Promise<void> {
 
   if (error) throw error;
 }
+
+// Sube o baja el precio de varios productos por porcentaje (positivo sube, negativo baja)
+export async function ajustarPreciosPorcentaje(porcentaje: number, categoriaId?: string): Promise<number> {
+  let query = supabase.from('productos').select('id, precio');
+  if (categoriaId) query = query.eq('categoria_id', categoriaId);
+
+  const { data, error } = await query;
+  if (error) throw error;
+  if (!data || data.length === 0) return 0;
+
+  await Promise.all(
+    data.map((p) => {
+      const nuevoPrecio = Math.round(p.precio * (1 + porcentaje / 100));
+      return supabase.from('productos').update({ precio: nuevoPrecio }).eq('id', p.id);
+    })
+  );
+
+  return data.length;
+}

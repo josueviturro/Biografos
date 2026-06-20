@@ -1,8 +1,8 @@
 // --- Sección Productos del panel admin ---
 
 import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, X } from 'lucide-react';
-import { getProductos, createProducto, updateProducto, deleteProducto, uploadImagenProducto } from '../../services/productos';
+import { Plus, Pencil, Trash2, X, Percent } from 'lucide-react';
+import { getProductos, createProducto, updateProducto, deleteProducto, uploadImagenProducto, ajustarPreciosPorcentaje } from '../../services/productos';
 import { getCategorias } from '../../services/categorias';
 import { formatPrice } from '../../utils/format';
 import type { Product, Categoria } from '../../types';
@@ -34,6 +34,10 @@ export default function AdminProductos() {
   const [form, setForm] = useState<ProductForm>(EMPTY_FORM);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [uploadingImg, setUploadingImg] = useState(false);
+  const [precioModalOpen, setPrecioModalOpen] = useState(false);
+  const [porcentaje, setPorcentaje] = useState<number>(0);
+  const [categoriaAjuste, setCategoriaAjuste] = useState('');
+  const [aplicandoPrecio, setAplicandoPrecio] = useState(false);
 
   useEffect(() => {
     Promise.all([getProductos(), getCategorias()])
@@ -90,11 +94,33 @@ export default function AdminProductos() {
     setDeleteConfirm(null);
   };
 
+  const handleAjustarPrecios = async () => {
+    if (!porcentaje) return;
+    setAplicandoPrecio(true);
+    try {
+      const cantidad = await ajustarPreciosPorcentaje(porcentaje, categoriaAjuste || undefined);
+      const data = await getProductos();
+      setProducts(data);
+      setPrecioModalOpen(false);
+      setPorcentaje(0);
+      setCategoriaAjuste('');
+      alert(`Se actualizaron ${cantidad} producto(s).`);
+    } catch (e) {
+      alert('Error al actualizar precios.');
+      console.error(e);
+    } finally {
+      setAplicandoPrecio(false);
+    }
+  };
+
   return (
     <>
       <div className={styles.topBar}>
         <h1 className={styles.pageTitle}>Productos</h1>
-        <button className={styles.newBtn} onClick={handleNew}><Plus size={18} /> Nuevo Producto</button>
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <button className={styles.cancelBtn} onClick={() => setPrecioModalOpen(true)}><Percent size={16} /> Ajustar precios</button>
+          <button className={styles.newBtn} onClick={handleNew}><Plus size={18} /> Nuevo Producto</button>
+        </div>
       </div>
 
       <div className={styles.tableWrapper}>
@@ -163,6 +189,46 @@ export default function AdminProductos() {
             <div className={styles.modalFooter}>
               <button className={styles.cancelBtn} onClick={() => setModalOpen(false)}>Cancelar</button>
               <button className={styles.saveBtn} onClick={handleSave} disabled={saving}>{saving ? 'Guardando...' : editingProduct ? 'Guardar cambios' : 'Crear producto'}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal ajustar precios */}
+      {precioModalOpen && (
+        <div className={styles.modalOverlay} onClick={() => setPrecioModalOpen(false)}>
+          <div className={styles.modalConfirm} onClick={e => e.stopPropagation()}>
+            <h3 className={styles.confirmTitle}>Ajustar precios por porcentaje</h3>
+
+            <label className={styles.fieldLabel}>Categoría</label>
+            <select className={styles.input} value={categoriaAjuste} onChange={e => setCategoriaAjuste(e.target.value)}>
+              <option value="">Todos los productos</option>
+              {categorias.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
+            </select>
+
+            <label className={styles.fieldLabel} style={{ marginTop: '0.75rem', display: 'block' }}>
+              Porcentaje (positivo sube, negativo baja)
+            </label>
+            <input
+              className={styles.input}
+              type="number"
+              value={porcentaje || ''}
+              onChange={e => setPorcentaje(Number(e.target.value))}
+              placeholder="Ej: 10 o -15"
+            />
+
+            {porcentaje !== 0 && (
+              <p className={styles.confirmText}>
+                Vas a {porcentaje > 0 ? 'subir' : 'bajar'} los precios un {Math.abs(porcentaje)}%
+                {categoriaAjuste ? ` en la categoría seleccionada.` : ` en todos los productos.`}
+              </p>
+            )}
+
+            <div className={styles.confirmActions}>
+              <button className={styles.cancelBtn} onClick={() => setPrecioModalOpen(false)}>Cancelar</button>
+              <button className={styles.saveBtn} onClick={handleAjustarPrecios} disabled={!porcentaje || aplicandoPrecio}>
+                {aplicandoPrecio ? 'Aplicando...' : 'Aplicar'}
+              </button>
             </div>
           </div>
         </div>
