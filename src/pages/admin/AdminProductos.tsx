@@ -89,8 +89,11 @@ export default function AdminProductos() {
   };
 
   const handleDelete = async (id: string) => {
-    try { await deleteProducto(id); setProducts(prev => prev.filter(p => p.id !== id)); }
-    catch (e) { alert('Error al eliminar.'); }
+    try {
+      const producto = products.find(p => p.id === id);
+      await deleteProducto(id, producto?.imagenes ?? []);
+      setProducts(prev => prev.filter(p => p.id !== id));
+    } catch (e) { alert('Error al eliminar.'); }
     setDeleteConfirm(null);
   };
 

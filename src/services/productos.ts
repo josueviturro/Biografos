@@ -62,7 +62,19 @@ export async function updateProducto(id: string, producto: Partial<Omit<Product,
   return data;
 }
 
-export async function deleteProducto(id: string): Promise<void> {
+function extractStoragePath(url: string): string | null {
+  const marker = '/productos/';
+  const idx = url.indexOf(marker);
+  return idx === -1 ? null : url.slice(idx + marker.length);
+}
+
+export async function deleteProducto(id: string, imagenes: string[] = []): Promise<void> {
+  const paths = imagenes.map(extractStoragePath).filter((p): p is string => !!p);
+  if (paths.length > 0) {
+    const { error: storageError } = await supabase.storage.from('productos').remove(paths);
+    if (storageError) console.error('Error al borrar imagen del storage:', storageError);
+  }
+
   const { error } = await supabase
     .from('productos')
     .delete()
