@@ -9,7 +9,10 @@ import { getProductos } from '../services/productos';
 import type { Product } from '../types';
 import styles from './HomePage.module.css';
 
-const FEATURED_CATEGORIES = ['Dormitorio', 'Living', 'Comedor', 'Cocina', 'Baño', 'Oficina', 'Jardín', 'Quincho'];
+const FEATURED_CATEGORIES = [
+  'Mesas', 'Sillas', 'Sillones', 'Camas', 'Roperos', 'Cómodas',
+  'Estanterías', 'Escritorios', 'Mesas de Luz', 'Mesas Ratonas', 'Percheros', 'Bancos',
+];
 
 const STEPS = [
   {
@@ -42,7 +45,7 @@ const STEPS = [
 export default function HomePage() {
   const navigate = useNavigate();
   const [bestSellers, setBestSellers] = useState<Product[]>([]);
-  const [current, setCurrent] = useState(4);
+  const [current, setCurrent] = useState(5);
   const [cardWidth, setCardWidth] = useState(0);
   const viewportRef = useRef<HTMLDivElement>(null);
 
