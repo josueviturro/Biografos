@@ -149,6 +149,9 @@
   color: var(--color-white);
   text-transform: uppercase;
   letter-spacing: 0.2em;
+  text-align: center;
+  line-height: 1.3;
+  padding: 0 0.75rem;
   transition: color 0.3s;
   pointer-events: none;
 }
