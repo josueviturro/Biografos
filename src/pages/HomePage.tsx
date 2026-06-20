@@ -10,7 +10,7 @@ import type { Product } from '../types';
 import styles from './HomePage.module.css';
 
 const FEATURED_CATEGORIES = [
-  'Mesas Comunes', 'Sillas', 'Sillones', 'Camas', 'Roperos', 'Cómodas',
+  'Mesas', 'Sillas', 'Sillones', 'Camas', 'Roperos', 'Cómodas',
   'Estanterías', 'Escritorios', 'Mesas de Luz', 'Mesas Ratonas', 'Percheros', 'Bancos',
   'Ordenadores', 'Bibliotecas', 'Rack', 'Otros',
 ];

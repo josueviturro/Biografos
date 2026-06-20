@@ -4,23 +4,25 @@ import { useState, useEffect } from 'react';
 import { Filter } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import { getProductos } from '../services/productos';
-import type { Product } from '../types';
+import { getCategorias } from '../services/categorias';
+import type { Product, Categoria } from '../types';
 import styles from './CatalogPage.module.css';
-
-const CATEGORIES = ['Todos', 'Dormitorio', 'Living', 'Comedor', 'Cocina', 'Baño', 'Oficina', 'Jardín', 'Quincho'];
 
 export default function CatalogPage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [categoriaFiltro, setCategoriaFiltro] = useState('Todos');
 
   useEffect(() => {
-    getProductos()
-      .then(setProducts)
+    Promise.all([getProductos(), getCategorias()])
+      .then(([prods, cats]) => { setProducts(prods); setCategorias(cats); })
       .catch(() => setError('No se pudieron cargar los productos.'))
       .finally(() => setLoading(false));
   }, []);
+
+  const CATEGORIES = ['Todos', ...categorias.map((c) => c.nombre)];
 
   const filtered = categoriaFiltro === 'Todos'
     ? products
