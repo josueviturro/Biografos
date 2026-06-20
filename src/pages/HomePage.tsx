@@ -22,7 +22,6 @@ const FEATURED_CATEGORIES = [
   { nombre: 'Mesas Ratonas', slug: 'mesas-ratonas' },
   { nombre: 'Percheros', slug: 'percheros' },
   { nombre: 'Bancos', slug: 'bancos' },
-  { nombre: 'Ordenadores', slug: 'ordenadores' },
   { nombre: 'Bibliotecas', slug: 'bibliotecas' },
   { nombre: 'Rack', slug: 'rack' },
   { nombre: 'Otros', slug: 'otros' },

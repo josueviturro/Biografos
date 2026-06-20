@@ -13,7 +13,6 @@ mesas-de-luz.jpg
 mesas-ratonas.jpg
 percheros.jpg
 bancos.jpg
-ordenadores.jpg
 bibliotecas.jpg
 rack.jpg
 otros.jpg
