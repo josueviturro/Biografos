@@ -1,7 +1,22 @@
 // --- Consultas de productos a Supabase ---
 
 import { supabase } from '../lib/supabase';
+import { compressImage } from '../utils/compressImage';
 import type { Product } from '../types';
+
+export async function uploadImagenProducto(file: File): Promise<string> {
+  const compressed = await compressImage(file);
+  const fileName = `${crypto.randomUUID()}.jpg`;
+
+  const { error } = await supabase.storage
+    .from('productos')
+    .upload(fileName, compressed, { contentType: 'image/jpeg' });
+
+  if (error) throw error;
+
+  const { data } = supabase.storage.from('productos').getPublicUrl(fileName);
+  return data.publicUrl;
+}
 
 export async function getProductos(): Promise<Product[]> {
   const { data, error } = await supabase

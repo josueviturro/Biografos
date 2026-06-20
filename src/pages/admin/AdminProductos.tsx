@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, X } from 'lucide-react';
-import { getProductos, createProducto, updateProducto, deleteProducto } from '../../services/productos';
+import { getProductos, createProducto, updateProducto, deleteProducto, uploadImagenProducto } from '../../services/productos';
 import { getCategorias } from '../../services/categorias';
 import { formatPrice } from '../../utils/format';
 import type { Product, Categoria } from '../../types';
@@ -33,6 +33,7 @@ export default function AdminProductos() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [form, setForm] = useState<ProductForm>(EMPTY_FORM);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [uploadingImg, setUploadingImg] = useState(false);
 
   useEffect(() => {
     Promise.all([getProductos(), getCategorias()])
@@ -65,6 +66,22 @@ export default function AdminProductos() {
       setModalOpen(false);
     } catch (e) { alert('Error al guardar.'); console.error(e); }
     finally { setSaving(false); }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingImg(true);
+    try {
+      const url = await uploadImagenProducto(file);
+      setForm(prev => ({ ...prev, imagenes: [url] }));
+    } catch (err) {
+      alert('Error al subir la imagen.');
+      console.error(err);
+    } finally {
+      setUploadingImg(false);
+      e.target.value = '';
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -133,8 +150,12 @@ export default function AdminProductos() {
               </select>
               <label className={styles.fieldLabel}>Descripción</label>
               <textarea className={`${styles.input} ${styles.textarea}`} value={form.descripcion} onChange={e => setForm({ ...form, descripcion: e.target.value })} rows={3} />
-              <label className={styles.fieldLabel}>URL de imagen</label>
-              <input className={styles.input} value={form.imagenes[0] ?? ''} onChange={e => setForm({ ...form, imagenes: e.target.value ? [e.target.value] : [] })} placeholder="https://..." />
+              <label className={styles.fieldLabel}>Imagen</label>
+              <input type="file" accept="image/*" className={styles.input} onChange={handleImageUpload} disabled={uploadingImg} />
+              {uploadingImg && <p style={{ color: 'var(--color-gray)', fontSize: '0.85rem' }}>Comprimiendo y subiendo...</p>}
+              {form.imagenes[0] && !uploadingImg && (
+                <img src={form.imagenes[0]} alt="preview" style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 4, marginTop: '0.5rem' }} />
+              )}
               <label className={styles.fieldLabel}>
                 <input type="checkbox" checked={form.activo} onChange={e => setForm({ ...form, activo: e.target.checked })} /> Activo (visible en la tienda)
               </label>
