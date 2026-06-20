@@ -10,10 +10,34 @@ import type { Product } from '../types';
 import styles from './HomePage.module.css';
 
 const FEATURED_CATEGORIES = [
-  'Mesas', 'Sillas', 'Sillones', 'Camas', 'Roperos', 'Cómodas',
-  'Estanterías', 'Escritorios', 'Mesas de Luz', 'Mesas Ratonas', 'Percheros', 'Bancos',
-  'Ordenadores', 'Bibliotecas', 'Rack', 'Otros',
+  { nombre: 'Mesas', slug: 'mesas' },
+  { nombre: 'Sillas', slug: 'sillas' },
+  { nombre: 'Sillones', slug: 'sillones' },
+  { nombre: 'Camas', slug: 'camas' },
+  { nombre: 'Roperos', slug: 'roperos' },
+  { nombre: 'Cómodas', slug: 'comodas' },
+  { nombre: 'Estanterías', slug: 'estanterias' },
+  { nombre: 'Escritorios', slug: 'escritorios' },
+  { nombre: 'Mesas de Luz', slug: 'mesas-de-luz' },
+  { nombre: 'Mesas Ratonas', slug: 'mesas-ratonas' },
+  { nombre: 'Percheros', slug: 'percheros' },
+  { nombre: 'Bancos', slug: 'bancos' },
+  { nombre: 'Ordenadores', slug: 'ordenadores' },
+  { nombre: 'Bibliotecas', slug: 'bibliotecas' },
+  { nombre: 'Rack', slug: 'rack' },
+  { nombre: 'Otros', slug: 'otros' },
 ];
+
+// Carga automática de cualquier foto puesta en src/assets/categorias/
+const categoriaImages = import.meta.glob('../assets/categorias/*.{jpg,jpeg,png,webp}', {
+  eager: true,
+  import: 'default',
+}) as Record<string, string>;
+
+function getCategoriaImage(slug: string): string | undefined {
+  const match = Object.keys(categoriaImages).find((path) => path.includes(`/${slug}.`));
+  return match ? categoriaImages[match] : undefined;
+}
 
 const STEPS = [
   {
@@ -137,20 +161,28 @@ export default function HomePage() {
               className={styles.carouselTrack}
               style={{ transform: `translateX(${trackOffset}px)` }}
             >
-              {FEATURED_CATEGORIES.map((cat, index) => (
-                <div
-                  key={cat}
-                  className={`${styles.categoryCard} ${stateClass[getCardState(index)]}`}
-                  style={{ width: cardWidth || undefined }}
-                  onClick={() =>
-                    getCardState(index) === 'active'
-                      ? navigate('/catalogo')
-                      : setCurrent(index)
-                  }
-                >
-                  <h3 className={styles.categoryName}>{cat}</h3>
-                </div>
-              ))}
+              {FEATURED_CATEGORIES.map((cat, index) => {
+                const img = getCategoriaImage(cat.slug);
+                return (
+                  <div
+                    key={cat.slug}
+                    className={`${styles.categoryCard} ${stateClass[getCardState(index)]}`}
+                    style={{
+                      width: cardWidth || undefined,
+                      backgroundImage: img
+                        ? `linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.55)), url(${img})`
+                        : undefined,
+                    }}
+                    onClick={() =>
+                      getCardState(index) === 'active'
+                        ? navigate('/catalogo')
+                        : setCurrent(index)
+                    }
+                  >
+                    <h3 className={styles.categoryName}>{cat.nombre}</h3>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
