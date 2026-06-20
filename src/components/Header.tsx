@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, Menu, X } from 'lucide-react';
-import Logo from './Logo';
+import logo from '../assets/logo/logo.png';
 import { useCart } from '../context/CartContext';
 import styles from './Header.module.css';
 
@@ -33,7 +33,7 @@ export default function Header() {
 
           {/* Logo + nombre */}
           <div className={styles.brand} onClick={() => handleNav('/')}>
-            <Logo className={styles.logoImg} />
+            <img src={logo} alt="Biografo" className={styles.logoImg} />
             <div className={styles.brandText}>
               <span className={styles.brandName}>BIOGRAFO</span>
               <span className={styles.brandSub}>Muebles de Pino</span>
