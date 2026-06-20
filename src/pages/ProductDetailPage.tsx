@@ -110,9 +110,6 @@ export default function ProductDetailPage() {
             Agregar al Carrito — {formatPrice(product.precio * quantity)}
           </Button>
 
-          <ul className={styles.benefits}>
-            <li>Envío gratuito en CABA y GBA.</li>
-          </ul>
         </div>
 
       </div>
