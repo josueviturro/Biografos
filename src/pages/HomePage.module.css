@@ -35,6 +35,13 @@
   max-width: 900px;
 }
 
+.heroLogo {
+  width: 64px;
+  height: auto;
+  margin: 0 auto 1.5rem;
+  display: block;
+}
+
 .heroSubtitle {
   color: var(--color-accent);
   font-size: 0.75rem;

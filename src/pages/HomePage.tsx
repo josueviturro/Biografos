@@ -7,6 +7,7 @@ import Button from '../components/Button';
 import ProductCard from '../components/ProductCard';
 import { getProductos } from '../services/productos';
 import type { Product } from '../types';
+import logo from '../assets/logo/logo.png';
 import styles from './HomePage.module.css';
 
 const FEATURED_CATEGORIES = [
@@ -129,6 +130,7 @@ export default function HomePage() {
           />
         </div>
         <div className={styles.heroContent}>
+          <img src={logo} alt="Biografo" className={styles.heroLogo} />
           <p className={styles.heroSubtitle}>Nueva Colección 2026</p>
           <h1 className={styles.heroTitle}>
             Elevando el Arte del <br /> Pino.
