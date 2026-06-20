@@ -1,4 +1,4 @@
-// --- Página Home: Hero, Categorías destacadas, Más vendidos desde Supabase ---
+// --- Página Home: Hero, Categorías destacadas, Novedades desde Supabase ---
 
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -12,6 +12,7 @@ import styles from './HomePage.module.css';
 const FEATURED_CATEGORIES = [
   'Mesas', 'Sillas', 'Sillones', 'Camas', 'Roperos', 'Cómodas',
   'Estanterías', 'Escritorios', 'Mesas de Luz', 'Mesas Ratonas', 'Percheros', 'Bancos',
+  'Ordenadores', 'Bibliotecas', 'Rack', 'Otros',
 ];
 
 const STEPS = [
@@ -168,7 +169,7 @@ export default function HomePage() {
       <section className={styles.bestSellers}>
         <div className={styles.container}>
           <div className={styles.bestSellersHeader}>
-            <h2 className={styles.sectionTitle}>Más Vendidos</h2>
+            <h2 className={styles.sectionTitle}>Novedades</h2>
             <button className={styles.viewAllBtn} onClick={() => navigate('/catalogo')}>
               Ver todo <ChevronRight size={16} />
             </button>
