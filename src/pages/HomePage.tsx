@@ -168,9 +168,7 @@ export default function HomePage() {
                     className={`${styles.categoryCard} ${stateClass[getCardState(index)]}`}
                     style={{
                       width: cardWidth || undefined,
-                      backgroundImage: img
-                        ? `linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.55)), url(${img})`
-                        : undefined,
+                      ...(img ? { '--cat-bg': `url(${img})` } as React.CSSProperties : {}),
                     }}
                     onClick={() =>
                       getCardState(index) === 'active'
