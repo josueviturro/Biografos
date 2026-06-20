@@ -1,6 +1,6 @@
 // --- Footer con logo, links rápidos y contacto ---
 
-import Logo from './Logo';
+import logo from '../assets/logo/logo.png';
 import styles from './Footer.module.css';
 
 export default function Footer() {
@@ -12,7 +12,7 @@ export default function Footer() {
           {/* Columna 1: Marca */}
           <div className={styles.brand}>
             <div className={styles.brandRow}>
-              <Logo className={styles.logoImg} />
+              <img src={logo} alt="Biografo" className={styles.logoImg} />
               <span className={styles.brandName}>BIOGRAFO</span>
             </div>
             <p className={styles.brandDesc}>
