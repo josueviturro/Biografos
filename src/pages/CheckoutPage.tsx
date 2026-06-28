@@ -7,11 +7,12 @@ import Button from '../components/Button';
 import { useCart } from '../context/CartContext';
 import { formatPrice } from '../utils/format';
 import { createOrden } from '../services/ordenes';
-import { calcularEnvio } from '../services/shipping';
+import { calcularEnvio, reverseGeocode } from '../services/shipping';
 import type { ShippingResult } from '../services/shipping';
 import styles from './CheckoutPage.module.css';
 
 const ShippingMap = lazy(() => import('../components/ShippingMap'));
+const AddressPickerMap = lazy(() => import('../components/AddressPickerMap'));
 
 interface FormData {
   nombre: string;
@@ -37,6 +38,8 @@ export default function CheckoutPage() {
   const [selectedCoords, setSelectedCoords] = useState<[number, number] | null>(null);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
+  const [buscandoDireccion, setBuscandoDireccion] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [shipping, setShipping] = useState<ShippingResult | null>(null);
@@ -73,6 +76,22 @@ export default function CheckoutPage() {
     setSelectedCoords(coords);
     setSuggestions([]);
     setShowDropdown(false);
+  };
+
+  const handlePickOnMap = async (coords: [number, number]) => {
+    setSelectedCoords(coords);
+    setShipping(null);
+    setSuggestions([]);
+    setShowDropdown(false);
+    setBuscandoDireccion(true);
+    try {
+      const address = await reverseGeocode(coords);
+      setDireccion(address);
+    } catch {
+      setDireccion(`${coords[0].toFixed(5)}, ${coords[1].toFixed(5)}`);
+    } finally {
+      setBuscandoDireccion(false);
+    }
   };
 
   const handleCalcularEnvio = async () => {
@@ -228,6 +247,27 @@ export default function CheckoutPage() {
                     </ul>
                   )}
                 </div>
+
+                <button
+                  type="button"
+                  className={styles.pickerToggleBtn}
+                  onClick={() => setShowPicker(v => !v)}
+                >
+                  <MapPin size={14} /> {showPicker ? 'Ocultar mapa' : '¿No aparece tu dirección? Ubicala en el mapa'}
+                </button>
+
+                {showPicker && (
+                  <div className={styles.pickerWrapper}>
+                    <Suspense fallback={<div className={styles.mapPlaceholder}>Cargando mapa...</div>}>
+                      <AddressPickerMap coords={selectedCoords} onSelect={handlePickOnMap} />
+                    </Suspense>
+                    <p className={styles.pickerHint}>
+                      {buscandoDireccion
+                        ? 'Buscando la dirección de ese punto...'
+                        : 'Hacé click en el mapa o arrastrá el pin para marcar tu domicilio.'}
+                    </p>
+                  </div>
+                )}
 
                 <button className={styles.calcBtn} onClick={handleCalcularEnvio} disabled={calculando}>
                   {calculando

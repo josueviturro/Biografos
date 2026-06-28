@@ -19,14 +19,20 @@ async function geocode(address: string): Promise<[number, number]> {
   return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
 }
 
+export async function reverseGeocode(coords: [number, number]): Promise<string> {
+  const [lat, lon] = coords;
+  const res = await fetch(`/api/geocode?lat=${lat}&lon=${lon}`);
+  const data = await res.json();
+  if (!data?.display_name) throw new Error('No se pudo obtener la dirección de ese punto.');
+  return data.display_name.split(',').slice(0, 3).join(',').trim();
+}
+
 async function getKm(from: [number, number], to: [number, number]): Promise<number> {
   const [latA, lonA] = from;
   const [latB, lonB] = to;
   const url = `https://router.project-osrm.org/route/v1/driving/${lonA},${latA};${lonB},${latB}?overview=false`;
-  console.log('[SHIPPING] Routing:', url);
   const res = await fetch(url);
   const data = await res.json();
-  console.log('[SHIPPING] Route result:', data);
   if (!data.routes?.[0]) throw new Error('No se pudo calcular la ruta.');
   return data.routes[0].distance / 1000;
 }

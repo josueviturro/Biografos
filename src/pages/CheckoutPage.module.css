@@ -278,6 +278,36 @@
   position: relative;
 }
 
+.pickerToggleBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: none;
+  border: none;
+  color: var(--color-gray);
+  font-size: 0.8rem;
+  font-family: var(--font-sans);
+  text-decoration: underline;
+  cursor: pointer;
+  align-self: flex-start;
+  padding: 0;
+}
+
+.pickerToggleBtn:hover {
+  color: var(--color-white);
+}
+
+.pickerWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pickerHint {
+  font-size: 0.78rem;
+  color: var(--color-gray);
+}
+
 .dropdown {
   position: absolute;
   top: 100%;
