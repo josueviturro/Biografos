@@ -55,7 +55,7 @@
 }
 
 .mainImage {
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 1 / 1;
   border-radius: 2px;
   overflow: hidden;
   background-color: #222222;
